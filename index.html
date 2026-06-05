@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sri Thalupulamma Temple Tiffins & Snacks - Next-Day Pre-Orders</title>
-    <meta name="description" content="Pre-order fresh hot tiffins, evening snacks, and premium summer cashews near Sri Thalupulamma Thalli Temple. Order today, pickup tomorrow, and help us eliminate food waste!">
+    <title>Sri Thalupulamma Temple Tiffins & Snacks - Online Orders</title>
+    <meta name="description" content="Order fresh hot tiffins and evening snacks near Sri Thalupulamma Thalli Temple. Order for today, tomorrow, or any day, and enjoy free temple delivery for orders over 10 items!">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -53,22 +53,21 @@
                 <div class="hero-section">
                     <div class="hero-info">
                         <div class="temple-proximity">
-                            📍 Opposite Temple Parking Lot
+                            📍 Near Petrol Bunk, Lova
                         </div>
                         <h1 class="hero-title">
                             Fresh Food Near the Holy <span>Thalupulamma Temple</span>
                         </h1>
                         <p class="hero-description">
-                            Visiting the sacred shrine? Pre-order your morning tiffins, afternoon water, evening snacks, and fresh summer cashews. Order today to secure fresh, piping-hot food at the temple counter while helping us run a zero food-waste kitchen!
+                            Visiting the sacred shrine? Order your morning tiffins (including egg & double egg dosas), afternoon water, and evening snacks. Order for today or any day in advance. Plus, if you order **10 or more items**, we can deliver directly to your location at the temple!
                         </p>
                         <div class="hero-actions">
-                            <button class="btn-primary" id="cta-menu">🥞 Order for Tomorrow</button>
-                            <button class="btn-secondary" onclick="navigate('menu'); selectCategory('cashews');">🌰 Summer Cashews</button>
+                            <button class="btn-primary" id="cta-menu">🥞 Order Fresh Food</button>
+                            <button class="btn-secondary" onclick="navigate('dashboard')">📊 Manage Dashboard</button>
                         </div>
                     </div>
                     <div class="hero-visual">
                         <div class="hero-image-wrapper">
-                            <!-- Fallback to SVG/Gradient if generated image is missing -->
                             <img id="hero-img-element" src="assets/tiffins.png" alt="Delicious Indian Breakfast Spread">
                         </div>
                     </div>
@@ -78,43 +77,43 @@
                 <div class="features-container">
                     <div class="section-title-wrapper">
                         <span class="section-subtitle">How We Work</span>
-                        <h2 class="section-title">Freshness Built on Zero Waste</h2>
+                        <h2 class="section-title">Fresh, Hot Food Served Instantly</h2>
                     </div>
                     <div class="features-grid">
                         
-                        <!-- Feature 1: Pre-Orders -->
+                        <!-- Feature 1: Anyday pre-orders -->
                         <div class="feature-card">
                             <span class="feature-icon">📅</span>
-                            <h3 class="feature-heading">Pre-Order Previous Day</h3>
+                            <h3 class="feature-heading">Flexible Ordering</h3>
                             <p class="feature-text">
-                                Book your morning idly, dosa, and puri before 9:00 PM tonight. We prepare the exact amount, keeping your breakfast fresh and eliminating food waste entirely.
+                                Order for today, tomorrow, or any future date. Secure your morning breakfast or evening snacks in advance so everything is ready for your group's arrival.
                             </p>
                         </div>
 
-                        <!-- Feature 2: Location and Pilgrims -->
+                        <!-- Feature 2: Temple delivery for 10+ items -->
+                        <div class="feature-card" style="border-color: var(--primary-color); background-color: var(--accent-light);">
+                            <span class="feature-icon">⚡</span>
+                            <h3 class="feature-heading" style="color:var(--primary-color);">Temple Area Delivery</h3>
+                            <p class="feature-text" style="color:var(--text-color);">
+                                Ordering for a family or tourist group? If you order <strong>10 or more items</strong>, we will deliver the hot food package directly to your location near the temple!
+                            </p>
+                        </div>
+
+                        <!-- Feature 3: Location and Pilgrims -->
                         <div class="feature-card">
-                            <span class="feature-icon">🕉️</span>
-                            <h3 class="feature-heading">Pilgrim-Friendly Counter</h3>
+                            <span class="feature-icon">⛽</span>
+                            <h3 class="feature-heading">Easy Petrol Bunk Pickup</h3>
                             <p class="feature-text">
-                                Located right near the Thalupulamma Thalli Temple entrance. Grab your instant token receipt, head to the counter after your darshan, and pick up your meal in seconds.
+                                Located on the Temple Road, right near the Petrol Bunk. Present your checkout Token Number, grab your fresh food, and continue your holy journey.
                             </p>
                         </div>
 
-                        <!-- Feature 3: Water & Tea -->
+                        <!-- Feature 4: Water & Tea -->
                         <div class="feature-card">
                             <span class="feature-icon">💧</span>
-                            <h3 class="feature-heading">Water & Beverages</h3>
+                            <h3 class="feature-heading">Water Plant Cans</h3>
                             <p class="feature-text">
-                                Traveling with large tourist groups? Pre-order cold water cans, fresh tea, coffee, and disposable paper plates for group picnics and long road drives.
-                            </p>
-                        </div>
-
-                        <!-- Feature 4: Cashews summer business -->
-                        <div class="feature-card">
-                            <span class="feature-icon">🌰</span>
-                            <h3 class="feature-heading">Summer Cashew Stall</h3>
-                            <p class="feature-text">
-                                Active April to June! Sourced directly from local coastal farms. Order premium raw cashews or spiced roasted cashews as perfect gifts or snacks.
+                                Pick up normal or cool water cans (20 Litres) and chilled water bottles. Keep your travel group refreshed under the hot coastal sun.
                             </p>
                         </div>
 
@@ -131,21 +130,20 @@
                         <h2 class="section-title">Select Delicious Food & Supplies</h2>
                     </div>
 
-                    <!-- Category filter navigation -->
+                    <!-- Category filter navigation (Cashews Removed) -->
                     <div class="category-nav">
                         <button class="category-pill active" data-category="tiffins" onclick="selectCategory('tiffins')">🥞 Morning Tiffins</button>
                         <button class="category-pill" data-category="snacks" onclick="selectCategory('snacks')">🍢 Evening Snacks</button>
                         <button class="category-pill" data-category="tea" onclick="selectCategory('tea')">☕ Tea Time</button>
                         <button class="category-pill" data-category="drinks" onclick="selectCategory('drinks')">🥤 Drinks & Kirana</button>
                         <button class="category-pill" data-category="water" onclick="selectCategory('water')">💧 Water Plant</button>
-                        <button class="category-pill" data-category="cashews" onclick="selectCategory('cashews')">🌰 Cashews (Summer)</button>
                     </div>
 
-                    <!-- Info banner explaining breakfast pre-order criteria -->
+                    <!-- Info banner explaining ordering and delivery options -->
                     <div class="menu-info-banner" id="menu-disclaimer">
                         <span>📢</span>
                         <div>
-                            <strong>Breakfast Pre-Order Policy:</strong> Tiffin items (Idly, Dosa, Puri, Pesarattu) must be booked today for pick-up tomorrow. This ensures we cook only what is ordered, saving resources and guaranteeing fresh hot breakfast!
+                            <strong>Order Placement Policy:</strong> Order for today or any day. For orders containing <strong>10 or more items</strong>, free delivery is available directly to your location near the temple!
                         </div>
                     </div>
 
@@ -162,7 +160,7 @@
                 <div class="checkout-view">
                     <div class="checkout-header">
                         <h2>Pre-Order Checkout</h2>
-                        <p>Secure your meal token for tomorrow's pickup</p>
+                        <p>Secure your meal token for your temple visit</p>
                     </div>
                     
                     <form id="checkout-form" onsubmit="handleCheckoutSubmit(event)">
@@ -176,23 +174,20 @@
                                     <input type="text" id="checkout-name" required placeholder="e.g. Rama Chandra Prasad">
                                 </div>
                                 <div class="form-group">
-                                    <label for="checkout-phone">Mobile Number (For Token SMS/WhatsApp)</label>
+                                    <label for="checkout-phone">Mobile Number (For Token Status)</label>
                                     <input type="tel" id="checkout-phone" required pattern="[0-9]{10}" placeholder="e.g. 9876543210">
                                 </div>
                                 
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="checkout-date">Pickup Date</label>
+                                        <label for="checkout-date">Pickup/Delivery Date</label>
                                         <input type="date" id="checkout-date" required>
-                                        <span id="checkout-date-note" style="font-size:0.7rem; color:var(--primary-color); display:none; margin-top:0.25rem; font-weight:600;">
-                                            ⚠️ Date restricted: Tiffin prep requires 1 day advance booking.
-                                        </span>
                                     </div>
                                     <div class="form-group">
-                                        <label for="checkout-time">Pickup Time</label>
+                                        <label for="checkout-time">Pickup/Delivery Time</label>
                                         <select id="checkout-time" required>
-                                            <option value="" disabled selected>Select pickup time</option>
-                                            <option value="07:00">07:00 AM (Early breakfast)</option>
+                                            <option value="" disabled selected>Select timing</option>
+                                            <option value="07:00">07:00 AM (Breakfast)</option>
                                             <option value="07:30">07:30 AM</option>
                                             <option value="08:00">08:00 AM (Peak morning)</option>
                                             <option value="08:30">08:30 AM</option>
@@ -203,6 +198,13 @@
                                             <option value="18:00">06:00 PM (Evening snacks)</option>
                                         </select>
                                     </div>
+                                </div>
+
+                                <!-- CONDITIONAL DELIVERY FIELD (unlocked when items >= 10) -->
+                                <div class="form-group" id="checkout-delivery-location-box" style="display:none; background-color:#e8f5e9; border: 1px solid #c8e6c9; padding: 1.25rem; border-radius: var(--border-radius-sm); margin-top:1.5rem;">
+                                    <span id="checkout-delivery-note" style="display:block; font-size:0.8rem; color:#2e7d32; margin-bottom:0.75rem; line-height:1.4;"></span>
+                                    <label for="checkout-delivery-location" style="color:#2e7d32; font-weight:700;">Where should we deliver near the Temple?</label>
+                                    <input type="text" id="checkout-delivery-location" placeholder="e.g. Main parking lot behind tourist bus 4, Hill steps gate, or Rest house room 10">
                                 </div>
 
                                 <h3 class="checkout-section-title" style="margin-top:2rem;">2. Select Payment Mode</h3>
@@ -227,7 +229,6 @@
                                 <div class="payment-panel active" id="panel-upi">
                                     <div class="upi-qr-box">
                                         <div class="upi-qr-placeholder">
-                                            <!-- Simple simulated QR Code using CSS borders -->
                                             <div style="width:120px; height:120px; border:6px solid #111; padding:5px; background:white; position:relative; box-sizing:border-box;">
                                                 <div style="width:20px; height:20px; border:4px solid #111; position:absolute; top:5px; left:5px;"></div>
                                                 <div style="width:20px; height:20px; border:4px solid #111; position:absolute; top:5px; right:5px;"></div>
@@ -267,7 +268,7 @@
                                     <div style="background-color: var(--border-color); padding: 1.25rem; border-radius: var(--border-radius-sm); font-size: 0.85rem; color: var(--text-color); display: flex; gap: 0.5rem; align-items: flex-start;">
                                         <span>⚠️</span>
                                         <div>
-                                            <strong>Pay cash at the shop:</strong> Your order token will be generated, but you must pay the total amount at the pickup counter prior to collecting your fresh food package.
+                                            <strong>Pay cash at the shop:</strong> Your order token will be generated, but you must pay the total amount at the counter or to the delivery person.
                                         </div>
                                     </div>
                                 </div>
@@ -287,7 +288,7 @@
                                         <span id="checkout-subtotal">₹0</span>
                                     </div>
                                     <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:var(--text-muted); margin-bottom:0.5rem;">
-                                        <span>Packaging & Service</span>
+                                        <span>Delivery Charge</span>
                                         <span>FREE</span>
                                     </div>
                                     <div style="display:flex; justify-content:space-between; font-weight:700; font-size:1.15rem; color:var(--text-color); margin-top:0.75rem; border-top:1px dashed var(--border-color); padding-top:0.75rem;">
@@ -297,7 +298,7 @@
                                 </div>
 
                                 <button type="submit" class="checkout-btn">
-                                    🔒 Submit Pre-Order & Pay
+                                    🔒 Submit Order
                                 </button>
                                 <button type="button" class="btn-secondary" style="width:100%; margin-top:0.75rem; padding:0.8rem;" onclick="navigate('menu')">
                                     ← Back to Menu
@@ -322,11 +323,11 @@
                     <span class="section-subtitle">Stall Manager</span>
                     <h2 class="section-title">Owner Demand & Prep Dashboard</h2>
                     <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.25rem;">
-                        Consolidated ingredient forecasting to ensure zero food waste.
+                        Consolidated prep sheet to cook exactly what is ordered.
                     </p>
                 </div>
 
-                <!-- Date Selector for forecast -->
+                <!-- Date Selector -->
                 <div class="dashboard-card" style="margin-bottom:2rem;">
                     <div class="dashboard-date-picker">
                         <label for="dashboard-date-select" style="margin-bottom:0; font-weight:700; font-size:1rem; color:var(--text-color);">
@@ -334,7 +335,7 @@
                         </label>
                         <input type="date" id="dashboard-date-select" style="max-width:200px; padding:0.5rem 1rem;">
                         <span style="font-size:0.8rem; color:var(--text-muted); font-style:italic;">
-                            (Shows tomorrow's booked orders by default)
+                            (Shows today's booked orders by default)
                         </span>
                     </div>
                 </div>
@@ -362,10 +363,10 @@
                     <div>
                         <div class="dashboard-card" style="position: sticky; top: 100px;">
                             <h3 style="font-size:1.25rem; margin-bottom:1rem; color:var(--primary-color); border-bottom:2px solid var(--border-color); padding-bottom:0.5rem;">
-                                🍳 Tomorrow's Cooking Checklist
+                                🍳 Prep & Ingredients checklist
                             </h3>
                             <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1.5rem;">
-                                Prepare exactly these quantities tonight to cover all booked orders with zero wastage.
+                                Prepare exactly these quantities to eliminate waste.
                             </p>
                             
                             <div class="prep-list" id="dashboard-prep-container">
@@ -398,7 +399,11 @@
                 <div class="footer-col">
                     <h4 style="font-family: var(--font-heading); font-size:1.25rem; color:white;">🚩 Sri Thalupulamma Stall</h4>
                     <p style="margin-top:1rem;">
-                        Providing warm hospitality, piping-hot breakfast, chilled water, and premium cashews to devotees and travelers visiting the sacred Sri Thalupulamma Thalli Temple.
+                        Providing warm hospitality, fresh hot morning breakfast, evening snacks, and purified water to devotees and travelers near the sacred temple.
+                    </p>
+                    <p style="margin-top:0.75rem; font-size:0.85rem; border-top:1px dashed #40322c; padding-top:0.75rem;">
+                        👤 <strong>Owner:</strong> K. Satyanarayana<br>
+                        ✉️ <strong>Email Support:</strong> <a href="mailto:thalupulammakitchen@gmail.com" style="color:var(--accent-color);">thalupulammakitchen@gmail.com</a>
                     </p>
                 </div>
                 <div class="footer-col">
@@ -407,13 +412,13 @@
                         <li><a href="#" onclick="navigate('menu'); selectCategory('tiffins');">Morning Tiffins</a></li>
                         <li><a href="#" onclick="navigate('menu'); selectCategory('snacks');">Evening Snacks</a></li>
                         <li><a href="#" onclick="navigate('menu'); selectCategory('tea');">Tea Time Varieties</a></li>
-                        <li><a href="#" onclick="navigate('menu'); selectCategory('cashews');">Summer Cashew Stall</a></li>
+                        <li><a href="#" onclick="navigate('menu'); selectCategory('water');">Water Plant Cans</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h4>Stall Timing</h4>
+                    <h4>Stall Timing & Location</h4>
                     <p>🕒 Mon - Sun: 5:30 AM - 9:00 PM</p>
-                    <p style="margin-top:0.5rem;">📍 Opposite Entrance Parking lot, Thalupulamma Temple, Lova, Andhra Pradesh</p>
+                    <p style="margin-top:0.5rem;">📍 Sri Thalupulamma Temple Road, Near Petrol Bunk, Lova, Andhra Pradesh</p>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -433,10 +438,8 @@
             </div>
             
             <div class="cart-footer" id="cart-footer-section" style="display: none;">
-                <!-- Next day disclaimer warning -->
                 <div class="preorder-disclaimer" id="tiffin-preorder-disclaimer">
-                    <span>💡</span>
-                    <span>Contains Breakfast Tiffins! This order will be prepared fresh for <strong>Tomorrow's pickup</strong>.</span>
+                    <!-- Dynamic disclaimer populated by app.js -->
                 </div>
                 
                 <div class="cart-total-row">
@@ -445,7 +448,7 @@
                 </div>
                 
                 <button class="checkout-btn" onclick="proceedToCheckout()">
-                    Proceed to Pre-Order
+                    Proceed to Order
                 </button>
             </div>
         </div>
