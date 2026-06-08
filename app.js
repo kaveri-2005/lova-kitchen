@@ -17,7 +17,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 30,
         desc: 'Soft, fluffy, steaming hot rice cakes served with ginger chutney, peanut chutney, and aromatic sambar.',
-        image: 'assets/assets/idily.webp',
+        image: 'assets/idily.webp',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -27,7 +27,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 30,
         desc: 'Crisp golden crepe made from fermented rice-lentil batter, served with chutneys and warm sambar.',
-        image: 'assets/assets/plaindosa.webp',
+        image: 'assets/plaindosa.webp',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -37,7 +37,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 40,
         desc: 'Crispy golden dosa topped with finely chopped onions, green chilies, and fresh coriander leaves.',
-        image: 'assets/assets/oniondosa.webp',
+        image: 'assets/oniondosa.webp',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -47,7 +47,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 30,
         desc: 'Golden-fried puffy wheat flatbreads served with a spiced potato gravy (bhaji) and coconut chutney.',
-        image: 'assets/assets/puri.webp',
+        image: 'assets/puri.webp',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -57,7 +57,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 30,
         desc: 'Crispy outside, fluffy inside fried dumplings made of flour, yogurt, and spices, served with coconut chutney.',
-        image: 'assets/assets/bonda.webp',
+        image: 'assets/bonda.webp',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -67,7 +67,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 45,
         desc: 'Healthy, protein-rich crepe made of whole green gram (moong dal) batter, topped with ginger and onions.',
-        image: 'assets/assets/pesattu.webp',
+        image: 'assets/pesattu.webp',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -77,7 +77,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 50,
         desc: 'Crispy dosa roasted with a freshly cracked egg, local spices, and onions. High protein breakfast.',
-        image: 'assets/assets/eggdosa.webp',
+        image: 'assets/eggdosa.webp',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -87,7 +87,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 60,
         desc: 'Loaded dosa roasted with two cracked eggs, crushed black pepper, green chilies, and coriander.',
-        image: 'assets/assets/eggdosa.webp',
+        image: 'assets/eggdosa.webp',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -99,7 +99,7 @@ const MenuItems = [
         category: 'water',
         price: 25,
         desc: 'Clean, purified drinking water can. Standard safety sealed, perfect for family groups and travelers.',
-        image: 'assets/assets/normalwater.webp',
+        image: 'assets/normalwater.webp',
         badge: 'Ready Stock',
         icon: '💧'
     },
@@ -109,7 +109,7 @@ const MenuItems = [
         category: 'water',
         price: 40,
         desc: 'Chilled purified drinking water can. Keeps your tourist group refreshed under the hot coastal sun.',
-        image: 'assets/assets/coolinwater.webp',
+        image: 'assets/coolinwater.webp',
         badge: 'Ready Stock',
         icon: '❄️'
     },
@@ -119,7 +119,7 @@ const MenuItems = [
         category: 'water',
         price: 20,
         desc: 'Chilled, sealed mineral water bottle for quick convenience while climbing the temple steps.',
-        image: 'assets/assets/coolinwater.webp',
+        image: 'assets/coolinwater.webp',
         badge: 'Ready Stock',
         icon: '💧'
     },
@@ -131,7 +131,7 @@ const MenuItems = [
         category: 'tea',
         price: 15,
         desc: 'Freshly brewed strong milk tea infused with cardamom and organic ginger. Rejuvenating taste.',
-        image: 'assets/assets/tea.jpg',
+        image: 'assets/tea.jpg',
         badge: 'Freshly Brewed',
         icon: '☕'
     },
@@ -141,7 +141,7 @@ const MenuItems = [
         category: 'tea',
         price: 20,
         desc: 'Authentic South Indian chicory-infused filter coffee frothed with thick hot milk in traditional brass cups.',
-        image: 'assets/assets/coffee.webp',
+        image: 'assets/coffee.webp',
         badge: 'Freshly Brewed',
         icon: '☕'
     },
@@ -151,7 +151,7 @@ const MenuItems = [
         category: 'tea',
         price: 15,
         desc: 'Light black tea brewed with fresh lemon extract and a touch of honey for a refreshing temple break.',
-        image: 'assets/assets/tea.jpg',
+        image: 'assets/tea.jpg',
         badge: 'Freshly Brewed',
         icon: '🍋'
     },
@@ -161,7 +161,7 @@ const MenuItems = [
         category: 'tea',
         price: 25,
         desc: 'Creamy hot milk simmered with ground almonds, saffron, and cardamom, garnished with almond flakes.',
-        image: 'assets/assets/tea.jpg',
+        image: 'assets/tea.jpg',
         badge: 'Freshly Brewed',
         icon: '🥛'
     },
@@ -215,7 +215,7 @@ const MenuItems = [
         category: 'snacks',
         price: 20,
         desc: 'Deep-fried crispy onion fritters coated with chickpea flour and local spices, served hot with mint chutney.',
-        image: 'assets/assets/pokadi.webp',
+        image: 'assets/pokadi.webp',
         badge: 'Hot & Fresh',
         icon: '🍢'
     },
@@ -225,7 +225,7 @@ const MenuItems = [
         category: 'snacks',
         price: 20,
         desc: 'Thick green chilies dipped in spiced gram batter, deep-fried to perfection, and stuffed with chopped onions.',
-        image: 'assets/assets/bajji.webp',
+        image: 'assets/bajji.webp',
         badge: 'Hot & Fresh',
         icon: '🍢'
     },
@@ -235,17 +235,7 @@ const MenuItems = [
         category: 'snacks',
         price: 20,
         desc: 'Crispy golden vada made from Bobbarlu (black-eyed peas) batter with ginger, black pepper, and curry leaves.',
-        image: 'assets/assets/gari.webp',
-        badge: 'Hot & Fresh',
-        icon: '🍢'
-    },
-    {
-        id: 'snk-samosa',
-        name: 'Hot Onion Samosa (4 Pcs)',
-        category: 'snacks',
-        price: 20,
-        desc: 'Crunchy triangular pastry shells filled with spiced caramelized onion and green peas stuffing.',
-        image: 'assets/snacks.png',
+        image: 'assets/gari.webp',
         badge: 'Hot & Fresh',
         icon: '🍢'
     }
