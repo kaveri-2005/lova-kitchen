@@ -17,7 +17,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 30,
         desc: 'Soft, fluffy, steaming hot rice cakes served with ginger chutney, peanut chutney, and aromatic sambar.',
-        image: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Idli_-_South_Indian_Snack.JPG',
+        image: 'assets/tiffins.jpg',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -27,7 +27,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 30,
         desc: 'Crisp golden crepe made from fermented rice-lentil batter, served with chutneys and warm sambar.',
-        image: 'assets/tiffins.png',
+        image: 'assets/tiffins.jpg',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -37,7 +37,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 40,
         desc: 'Crispy golden dosa topped with finely chopped onions, green chilies, and fresh coriander leaves.',
-        image: 'assets/tiffins.png',
+        image: 'assets/tiffins.jpg',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -47,7 +47,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 30,
         desc: 'Golden-fried puffy wheat flatbreads served with a spiced potato gravy (bhaji) and coconut chutney.',
-        image: 'assets/tiffins.png',
+        image: 'assets/tiffins.jpg',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -57,7 +57,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 30,
         desc: 'Crispy outside, fluffy inside fried dumplings made of flour, yogurt, and spices, served with coconut chutney.',
-        image: 'assets/tiffins.png',
+        image: 'assets/tiffins.jpg',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -67,7 +67,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 45,
         desc: 'Healthy, protein-rich crepe made of whole green gram (moong dal) batter, topped with ginger and onions.',
-        image: 'assets/tiffins.png',
+        image: 'assets/tiffins.jpg',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -77,7 +77,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 50,
         desc: 'Crispy dosa roasted with a freshly cracked egg, local spices, and onions. High protein breakfast.',
-        image: 'assets/tiffins.png',
+        image: 'assets/tiffins.jpg',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
@@ -87,7 +87,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 60,
         desc: 'Loaded dosa roasted with two cracked eggs, crushed black pepper, green chilies, and coriander.',
-        image: 'assets/tiffins.png',
+        image: 'assets/tiffins.jpg',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
