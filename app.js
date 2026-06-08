@@ -960,61 +960,6 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('checkout-form').addEventListener('submit', handleCheckoutSubmit);
     document.getElementById('dashboard-date-select').addEventListener('change', renderDashboard);
 
-    // Image Modal Event Listeners
-    document.getElementById('image-modal-close').addEventListener('click', closeImageModal);
-    document.getElementById('image-modal').addEventListener('click', (e) => {
-        if (e.target.id === 'image-modal' || e.target.id === 'image-modal-close') {
-            closeImageModal();
-        }
-    });
-
-    // Event Delegation for Menu Card images
-    const menuGrid = document.getElementById('menu-items-grid');
-    if (menuGrid) {
-        menuGrid.addEventListener('click', (e) => {
-            if (e.target.tagName === 'IMG' && e.target.closest('.menu-card-img-wrapper')) {
-                openImageModal(e.target.src, e.target.alt);
-            }
-        });
-    }
-
-    // Event for Hero Banner image
-    const heroImg = document.getElementById('hero-img-element');
-    if (heroImg) {
-        heroImg.addEventListener('click', () => {
-            openImageModal(heroImg.src, heroImg.alt);
-        });
-    }
-
     navigate('home');
     updateCartUI();
 });
-
-// Image Lightbox Modal Functions (Zomato-style Zoom In & Zoom Out Transitions)
-function openImageModal(src, caption) {
-    const modal = document.getElementById('image-modal');
-    const modalImg = document.getElementById('image-modal-img');
-    const captionText = document.getElementById('image-modal-caption');
-
-    modalImg.src = src;
-    captionText.innerHTML = caption;
-    
-    // Show wrapper and trigger animations on next frame
-    modal.style.display = 'flex';
-    void modal.offsetWidth; // Force CSS repaint
-    modal.classList.add('open');
-}
-
-function closeImageModal() {
-    const modal = document.getElementById('image-modal');
-    if (!modal.classList.contains('open')) return;
-
-    modal.classList.remove('open');
-    modal.classList.add('closing');
-
-    // Wait 400ms for zoom-out shrink transition to finish
-    setTimeout(() => {
-        modal.style.display = 'none';
-        modal.classList.remove('closing');
-    }, 400);
-}
