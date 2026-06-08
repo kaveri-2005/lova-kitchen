@@ -69,4 +69,4 @@ Since the project uses client-side routing and local storage, you can serve it u
 ## 👥 Contact & Support
 * **Owner**: Kaliboyina Ramakrishna (+91 7780334755)
 * **Support Email**: [thalupulammakitchen@gmail.com](mailto:thalupulammakitchen@gmail.com)
-* **Location**: Temple Road, Near Petrol Bunk, Lova, Andhra Pradesh
+* **Location**: Temple Road, Near Petrol Bunk, Lovakothuru, Andhra Pradesh - 533401 (Plus Code: 9F5W+7RP)
