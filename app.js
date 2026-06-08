@@ -17,7 +17,7 @@ const MenuItems = [
         category: 'tiffins',
         price: 30,
         desc: 'Soft, fluffy, steaming hot rice cakes served with ginger chutney, peanut chutney, and aromatic sambar.',
-        image: 'assets/tiffins.png',
+        image: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/Idli_-_South_Indian_Snack.JPG',
         badge: 'Fresh & Hot',
         icon: '🥞'
     },
