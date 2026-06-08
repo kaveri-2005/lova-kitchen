@@ -36,7 +36,6 @@ The application serves two primary roles: helping pilgrim groups and temple visi
   * Crispy Onion Pakodi (Plate) — `₹20`
   * Green Chili Bajji (3 Pcs) — `₹20`
   * Bobari Gari (3 Pcs) — `₹20` (Special black-eyed peas/bobbarlu recipe)
-  * Hot Samosa (4 Pcs) — `₹20`
 * **Tea Time**: Cardamom Tea, Filter Coffee, Lemon Tea, Badam Milk.
 * **Water Plant**: Purified 20L water cans (Normal & Chilled) and 1L cold bottles.
 * **Cool Drinks & Kirana**: Cold soft drinks, ice creams, and disposable paper plates & glasses for picnics.
@@ -68,6 +67,6 @@ Since the project uses client-side routing and local storage, you can serve it u
 ---
 
 ## 👥 Contact & Support
-* **Owner**: K. Satyanarayana
+* **Owner**: Kaliboyina Ramakrishna (+91 7780334755)
 * **Support Email**: [thalupulammakitchen@gmail.com](mailto:thalupulammakitchen@gmail.com)
 * **Location**: Temple Road, Near Petrol Bunk, Lova, Andhra Pradesh
