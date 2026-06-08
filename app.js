@@ -409,7 +409,7 @@ function updateCartUI() {
             disclaimerEl.style.color = '#2e7d32';
         } else {
             disclaimerEl.style.display = 'flex';
-            disclaimerEl.innerHTML = `<span>💡</span> <span>Order 10+ items for free delivery/pickup service at your temple location. Currently: ${totalCount} items (Stall pickup).</span>`;
+            disclaimerEl.innerHTML = `<span>💡</span> <span>Order 10+ items for free delivery/pickup service at your temple location. Currently: ${totalCount} items (<a href="https://www.google.com/maps/search/?api=1&query=9F5W%2B7RP,+lovakothuru,+Andhra+Pradesh+533401" target="_blank" style="color:inherit; font-weight:700; text-decoration:underline;">Stall pickup near Petrol Bunk</a>).</span>`;
             disclaimerEl.style.backgroundColor = 'var(--accent-light)';
             disclaimerEl.style.color = '#8c5d00';
         }
@@ -663,7 +663,7 @@ function renderReceipt() {
         deliveryRowHtml = `
             <div class="receipt-row">
                 <span style="color:var(--text-muted);">Stall Pickup:</span>
-                <strong>Near Petrol Bunk Stall</strong>
+                <strong><a href="https://www.google.com/maps/search/?api=1&query=9F5W%2B7RP,+lovakothuru,+Andhra+Pradesh+533401" target="_blank" style="color:var(--primary-color); text-decoration:underline; font-weight:700;">📍 Near Petrol Bunk Stall</a></strong>
             </div>
         `;
     }
@@ -732,7 +732,7 @@ function renderReceipt() {
                 <div class="receipt-instructions">
                     <p style="font-weight:700; color:var(--text-color); margin-bottom:0.5rem;">🚩 Location Guide</p>
                     <p style="font-size:0.75rem; line-height:1.4;">
-                        Our shop is located on the Sri Thalupulamma Temple Road, right next to the petrol bunk, Lova. If you need help, feel free to write to us at <strong style="color:var(--primary-color);">thalupulammakitchen@gmail.com</strong>.
+                        Our shop is located on the <a href="https://www.google.com/maps/search/?api=1&query=9F5W%2B7RP,+lovakothuru,+Andhra+Pradesh+533401" target="_blank" style="color:var(--primary-color); text-decoration:underline; font-weight:700;">Sri Thalupulamma Temple Road, right next to the petrol bunk, Lovakothuru (9F5W+7RP)</a>. Click the link to open the exact location on Google Maps. If you need help, feel free to write to us at <strong style="color:var(--primary-color);">thalupulammakitchen@gmail.com</strong>.
                     </p>
                 </div>
                 
@@ -816,9 +816,10 @@ function renderDashboard() {
             const itemString = order.items.map(i => `${i.name} (${i.quantity})`).join(', ');
             let deliveryText = '';
             if (order.deliveryLocation) {
-                deliveryText = `<div style="font-size:0.75rem; color:#2e7d32; font-weight:700; margin-top:0.25rem;">📍 Delivery: ${order.deliveryLocation}</div>`;
+                const encodedLoc = encodeURIComponent(order.deliveryLocation + ', Lovakothuru, Andhra Pradesh');
+                deliveryText = `<div style="font-size:0.75rem; color:#2e7d32; font-weight:700; margin-top:0.25rem;">📍 Delivery: <a href="https://www.google.com/maps/search/?api=1&query=${encodedLoc}" target="_blank" style="color:#2e7d32; text-decoration:underline;">${order.deliveryLocation} ➔</a></div>`;
             } else {
-                deliveryText = `<div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">🚶 Pickup at Petrol Bunk Stall</div>`;
+                deliveryText = `<div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">🚶 Pickup: <a href="https://www.google.com/maps/search/?api=1&query=9F5W%2B7RP,+lovakothuru,+Andhra+Pradesh+533401" target="_blank" style="color:var(--text-muted); text-decoration:underline;">Petrol Bunk Stall (9F5W+7RP) ➔</a></div>`;
             }
 
             return `
