@@ -523,6 +523,7 @@ button {
     background-color: #ffffff; /* Matches white image background */
     padding: 5px; /* Less padding to make the product shots (like water cans) look larger */
     transition: var(--transition);
+    cursor: zoom-in; /* Indicates the image is clickable */
 }
 
 .menu-card:hover .menu-card-img-wrapper img {
@@ -1351,4 +1352,76 @@ input:focus, select:focus {
     .hero-visual {
         order: -1;
     }
+}
+
+/* Image Lightbox Modal */
+.image-modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top of everything */
+    padding-top: 50px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.9); /* Dimmed black background */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.image-modal-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 80vh;
+    border-radius: var(--border-radius-md);
+    border: 3px solid white;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    animation: zoomIn 0.3s ease;
+    object-fit: contain;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.image-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+    z-index: 1010;
+}
+
+.image-modal-close:hover,
+.image-modal-close:focus {
+    color: var(--primary-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.image-modal-caption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    font-family: var(--font-body);
+}
+
+#hero-img-element {
+    cursor: zoom-in;
 }

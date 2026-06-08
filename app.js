@@ -960,6 +960,47 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('checkout-form').addEventListener('submit', handleCheckoutSubmit);
     document.getElementById('dashboard-date-select').addEventListener('change', renderDashboard);
 
+    // Image Modal Event Listeners
+    document.getElementById('image-modal-close').addEventListener('click', closeImageModal);
+    document.getElementById('image-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'image-modal' || e.target.id === 'image-modal-close') {
+            closeImageModal();
+        }
+    });
+
+    // Event Delegation for Menu Card images
+    const menuGrid = document.getElementById('menu-items-grid');
+    if (menuGrid) {
+        menuGrid.addEventListener('click', (e) => {
+            if (e.target.tagName === 'IMG' && e.target.closest('.menu-card-img-wrapper')) {
+                openImageModal(e.target.src, e.target.alt);
+            }
+        });
+    }
+
+    // Event for Hero Banner image
+    const heroImg = document.getElementById('hero-img-element');
+    if (heroImg) {
+        heroImg.addEventListener('click', () => {
+            openImageModal(heroImg.src, heroImg.alt);
+        });
+    }
+
     navigate('home');
     updateCartUI();
 });
+
+// Image Lightbox Modal Functions
+function openImageModal(src, caption) {
+    const modal = document.getElementById('image-modal');
+    const modalImg = document.getElementById('image-modal-img');
+    const captionText = document.getElementById('image-modal-caption');
+
+    modal.style.display = 'flex';
+    modalImg.src = src;
+    captionText.innerHTML = caption;
+}
+
+function closeImageModal() {
+    document.getElementById('image-modal').style.display = 'none';
+}
