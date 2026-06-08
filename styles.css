@@ -512,7 +512,7 @@ button {
 .menu-card-img-wrapper {
     position: relative;
     height: 180px;
-    background-color: var(--bg-color);
+    background-color: #ffffff; /* Seamless white background */
     overflow: hidden;
 }
 
@@ -520,8 +520,8 @@ button {
     width: 100%;
     height: 100%;
     object-fit: contain; /* Prevents food items from being cropped or distorted */
-    background-color: var(--bg-card);
-    padding: 10px; /* Elegant padding around product shots */
+    background-color: #ffffff; /* Matches white image background */
+    padding: 5px; /* Less padding to make the product shots (like water cans) look larger */
     transition: var(--transition);
 }
 
