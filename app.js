@@ -990,17 +990,31 @@ window.addEventListener('DOMContentLoaded', () => {
     updateCartUI();
 });
 
-// Image Lightbox Modal Functions
+// Image Lightbox Modal Functions (Zomato-style Zoom In & Zoom Out Transitions)
 function openImageModal(src, caption) {
     const modal = document.getElementById('image-modal');
     const modalImg = document.getElementById('image-modal-img');
     const captionText = document.getElementById('image-modal-caption');
 
-    modal.style.display = 'flex';
     modalImg.src = src;
     captionText.innerHTML = caption;
+    
+    // Show wrapper and trigger animations on next frame
+    modal.style.display = 'flex';
+    void modal.offsetWidth; // Force CSS repaint
+    modal.classList.add('open');
 }
 
 function closeImageModal() {
-    document.getElementById('image-modal').style.display = 'none';
+    const modal = document.getElementById('image-modal');
+    if (!modal.classList.contains('open')) return;
+
+    modal.classList.remove('open');
+    modal.classList.add('closing');
+
+    // Wait 400ms for zoom-out shrink transition to finish
+    setTimeout(() => {
+        modal.style.display = 'none';
+        modal.classList.remove('closing');
+    }, 400);
 }
