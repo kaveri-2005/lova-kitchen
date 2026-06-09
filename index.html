@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sri Thalupulamma Temple Tiffins & Snacks - Online Orders</title>
     <meta name="description" content="Order fresh hot tiffins and evening snacks near Sri Thalupulamma Thalli Temple. Order for today, tomorrow, or any day, and enjoy free temple delivery for orders over 10 items!">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=2.0">
 </head>
 <body>
 
@@ -124,6 +124,60 @@
 
                     </div>
                 </div>
+
+                <!-- Customer Reviews Section -->
+                <div class="reviews-section">
+                    <div class="section-title-wrapper">
+                        <span class="section-subtitle">Customer Reviews</span>
+                        <h2 class="section-title">What Devotees & Travelers Say</h2>
+                        <p style="color:var(--text-muted); font-size:0.9rem; max-width:600px; margin: 0.5rem auto 0 auto;">
+                            We take pride in preparing fresh, delicious home-cooked tiffins, evening snacks, and tea. Read feedback from our valued customers!
+                        </p>
+                    </div>
+
+                    <div class="reviews-grid" id="reviews-container">
+                        <!-- Populated dynamically by app.js -->
+                    </div>
+
+                    <!-- Interactive Submit Review Form -->
+                    <div class="review-form-container">
+                        <h3 class="review-form-title">💬 Share Your Experience</h3>
+                        <form id="add-review-form" onsubmit="handleReviewSubmit(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="review-name">Your Name</label>
+                                    <input type="text" id="review-name" required placeholder="e.g. D. Rama Rao">
+                                </div>
+                                <div class="form-group">
+                                    <label for="review-tag">Visitor Type</label>
+                                    <select id="review-tag">
+                                        <option value="Pilgrim Group">Pilgrim Group</option>
+                                        <option value="Family Traveler">Family Traveler</option>
+                                        <option value="Local Resident">Local Resident</option>
+                                        <option value="Daily Customer">Daily Customer</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label style="display:block; margin-bottom:0.5rem; font-weight: 600;">Your Rating</label>
+                                <div class="stars-rating-input" id="rating-stars-input">
+                                    <button type="button" class="star-rating-btn" data-rating="1">☆</button>
+                                    <button type="button" class="star-rating-btn" data-rating="2">☆</button>
+                                    <button type="button" class="star-rating-btn" data-rating="3">☆</button>
+                                    <button type="button" class="star-rating-btn" data-rating="4">☆</button>
+                                    <button type="button" class="star-rating-btn" data-rating="5">☆</button>
+                                </div>
+                                <input type="hidden" id="review-rating-value" value="0">
+                            </div>
+                            <div class="form-group" style="margin-top: 1rem;">
+                                <label for="review-comment">Review Comments</label>
+                                <textarea id="review-comment" required rows="3" placeholder="How was the food quality, taste, location, or delivery service?" style="width:100%; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding:0.75rem; font-family:inherit;"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary" style="padding:0.75rem 2rem; margin-top:1rem;">Submit Review</button>
+                        </form>
+                    </div>
+                </div>
+
             </section>
 
 
@@ -472,6 +526,6 @@
     </div>
 
     <!-- Main JavaScript Logic -->
-    <script src="app.js"></script>
+    <script src="app.js?v=2.2"></script>
 </body>
 </html>

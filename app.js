@@ -114,12 +114,42 @@ const MenuItems = [
         icon: '❄️'
     },
     {
-        id: 'wat-cool-bottle',
+        id: 'wat-bottle-1l',
         name: 'Chilled Water Bottle (1L)',
         category: 'water',
         price: 20,
         desc: 'Chilled, sealed mineral water bottle for quick convenience while climbing the temple steps.',
-        image: 'assets/coolinwater.webp',
+        image: 'assets/20rswaterbottle.webp',
+        badge: 'Ready Stock',
+        icon: '💧'
+    },
+    {
+        id: 'wat-bottle-2l',
+        name: 'Chilled Water Bottle (2L)',
+        category: 'water',
+        price: 30,
+        desc: 'Large chilled mineral water bottle, ideal for groups and pilgrim families.',
+        image: 'assets/2lit.webp',
+        badge: 'Ready Stock',
+        icon: '💧'
+    },
+    {
+        id: 'wat-bottle-500ml',
+        name: 'Chilled Water Bottle (500ml)',
+        category: 'water',
+        price: 10,
+        desc: 'Half-litre chilled mineral water bottle, easy to carry while visiting the temple.',
+        image: 'assets/10rsbottle.webp',
+        badge: 'Ready Stock',
+        icon: '💧'
+    },
+    {
+        id: 'wat-packet',
+        name: 'Purified Water Packet',
+        category: 'water',
+        price: 2,
+        desc: 'Single purified water packet for instant thirst quenching.',
+        image: 'assets/waterpacket.webp',
         badge: 'Ready Stock',
         icon: '💧'
     },
@@ -131,7 +161,7 @@ const MenuItems = [
         category: 'tea',
         price: 10,
         desc: 'Traditional freshly brewed hot milk tea. Perfect morning kick starter.',
-        image: 'assets/tea.jpg',
+        image: 'assets/tea_normal.png',
         badge: 'Hot & Fresh',
         icon: '☕'
     },
@@ -141,7 +171,7 @@ const MenuItems = [
         category: 'tea',
         price: 15,
         desc: 'Premium rich milk tea brewed to perfection with select tea leaves.',
-        image: 'assets/tea.jpg',
+        image: 'assets/tea_special.png',
         badge: 'Stall Special',
         icon: '☕'
     },
@@ -151,7 +181,7 @@ const MenuItems = [
         category: 'tea',
         price: 20,
         desc: 'Hot milk tea infused with freshly crushed zesty ginger root.',
-        image: 'assets/tea.jpg',
+        image: 'assets/tea_ginger.png',
         badge: 'Immunity Booster',
         icon: '☕'
     },
@@ -161,7 +191,7 @@ const MenuItems = [
         category: 'tea',
         price: 20,
         desc: 'Fragrant and soothing hot tea flavored with crushed green cardamom pods.',
-        image: 'assets/tea.jpg',
+        image: 'assets/tea_cardamom.png',
         badge: 'Best Seller',
         icon: '☕'
     },
@@ -171,7 +201,7 @@ const MenuItems = [
         category: 'tea',
         price: 20,
         desc: 'Healthy hot milk tea brewed with natural organic jaggery (bellam) instead of sugar.',
-        image: 'assets/tea.jpg',
+        image: 'assets/tea_jaggery.png',
         badge: 'Healthy Choice',
         icon: '☕'
     },
@@ -181,7 +211,7 @@ const MenuItems = [
         category: 'tea',
         price: 25,
         desc: 'Ultimate hot blend of ginger, cardamom, and organic jaggery (bellam) tea.',
-        image: 'assets/tea.jpg',
+        image: 'assets/tea_allmix.png',
         badge: 'Stall Signature',
         icon: '☕'
     },
@@ -191,7 +221,7 @@ const MenuItems = [
         category: 'tea',
         price: 20,
         desc: 'Hot aromatic coffee frothed with thick hot milk.',
-        image: 'assets/coffee.webp',
+        image: 'assets/coffee_filter.png',
         badge: 'Aromatic',
         icon: '☕'
     },
@@ -201,8 +231,28 @@ const MenuItems = [
         category: 'tea',
         price: 20,
         desc: 'Traditional hot filter coffee brewed with healthy organic jaggery (bellam).',
-        image: 'assets/coffee.webp',
+        image: 'assets/coffee_bellam.png',
         badge: 'Jaggery Special',
+        icon: '☕'
+    },
+    {
+        id: 'tea-sugarless',
+        name: 'Sugar Less Tea',
+        category: 'tea',
+        price: 15,
+        desc: 'Freshly brewed hot milk tea prepared without any added sugar.',
+        image: 'assets/tea_sugarless.png',
+        badge: 'Diabetic Friendly',
+        icon: '☕'
+    },
+    {
+        id: 'tea-sugarless-coffee',
+        name: 'Sugar Less Coffee',
+        category: 'tea',
+        price: 20,
+        desc: 'Hot aromatic coffee frothed with thick hot milk, served without sugar.',
+        image: 'assets/coffee_sugarless.png',
+        badge: 'Diabetic Friendly',
         icon: '☕'
     },
 
@@ -971,10 +1021,150 @@ function seedSampleData() {
         localStorage.setItem('thalupulamma_orders', JSON.stringify(samples));
     }
 }
+// CUSTOMER REVIEWS & FEEDBACK DATABASE
+const DefaultReviews = [
+    {
+        name: 'D. Rama Rao',
+        tag: 'Pilgrim Group',
+        rating: 5,
+        comment: 'The Steam Idly is incredibly soft and fresh. Ginger chutney has the perfect spice! Best breakfast near the temple.',
+        avatar: 'R'
+    },
+    {
+        name: 'Kaveri Prasad',
+        tag: 'Family Traveler',
+        rating: 5,
+        comment: 'We ordered 15 plates of Double Egg Dosa and Mysore Bonda for our group. They delivered it hot directly to the temple steps entrance. Outstanding service!',
+        avatar: 'K'
+    },
+    {
+        name: 'Suresh Kumar',
+        tag: 'Local Resident',
+        rating: 5,
+        comment: 'Whenever we visit Sri Thalupulamma Temple, we pick up our water cans and cardamom tea from here. The Bellam Tea is a must-try for everyone!',
+        avatar: 'S'
+    },
+    {
+        name: 'Anitha Reddy',
+        tag: 'Daily Customer',
+        rating: 5,
+        comment: 'Clean, hygienic, and very tasty. Highly recommend the onion pakodi and chili bajji in the evening. Friendly owner Kaliboyina Ramakrishna.',
+        avatar: 'A'
+    }
+];
+
+function initReviews() {
+    let reviews = JSON.parse(localStorage.getItem('thalupulamma_reviews'));
+    if (!reviews) {
+        reviews = DefaultReviews;
+        localStorage.setItem('thalupulamma_reviews', JSON.stringify(reviews));
+    }
+    renderReviews();
+    setupReviewRatingListeners();
+}
+
+function renderReviews() {
+    const container = document.getElementById('reviews-container');
+    if (!container) return;
+    
+    const reviews = JSON.parse(localStorage.getItem('thalupulamma_reviews')) || DefaultReviews;
+    
+    container.innerHTML = reviews.map(rev => {
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rev.rating) {
+                starsHtml += `<span class="star filled">★</span>`;
+            } else {
+                starsHtml += `<span class="star empty">★</span>`;
+            }
+        }
+        
+        return `
+            <div class="review-card">
+                <div class="review-stars">${starsHtml}</div>
+                <p class="review-text">"${rev.comment}"</p>
+                <div class="review-author">
+                    <div class="review-avatar">${rev.avatar}</div>
+                    <div class="review-author-info">
+                        <span class="review-author-name">${rev.name}</span>
+                        <span class="review-author-tag">${rev.tag}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function setupReviewRatingListeners() {
+    const starBtns = document.querySelectorAll('#rating-stars-input .star-rating-btn');
+    const ratingValueInput = document.getElementById('review-rating-value');
+    if (!starBtns || !ratingValueInput) return;
+    
+    starBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const selectedRating = parseInt(e.currentTarget.getAttribute('data-rating'));
+            ratingValueInput.value = selectedRating;
+            
+            starBtns.forEach(b => {
+                const r = parseInt(b.getAttribute('data-rating'));
+                if (r <= selectedRating) {
+                    b.classList.add('active');
+                    b.textContent = '★'; // Fill the star
+                } else {
+                    b.classList.remove('active');
+                    b.textContent = '☆'; // Empty the star
+                }
+            });
+        });
+    });
+}
+
+function handleReviewSubmit(event) {
+    event.preventDefault();
+    
+    const nameInput = document.getElementById('review-name');
+    const tagSelect = document.getElementById('review-tag');
+    const commentInput = document.getElementById('review-comment');
+    const ratingInput = document.getElementById('review-rating-value');
+    
+    if (!nameInput || !commentInput) return;
+    
+    const rating = ratingInput ? parseInt(ratingInput.value) : 0;
+    
+    if (rating === 0) {
+        alert('Please select a star rating by clicking the stars before submitting!');
+        return;
+    }
+    
+    const name = nameInput.value.trim();
+    const tag = tagSelect ? tagSelect.value : 'Visitor';
+    const comment = commentInput.value.trim();
+    const avatar = name.charAt(0).toUpperCase() || '👤';
+    
+    const newReview = { name, tag, rating, comment, avatar };
+    
+    const reviews = JSON.parse(localStorage.getItem('thalupulamma_reviews')) || DefaultReviews;
+    reviews.unshift(newReview); // Add to the top
+    localStorage.setItem('thalupulamma_reviews', JSON.stringify(reviews));
+    
+    // Reset form
+    nameInput.value = '';
+    commentInput.value = '';
+    if (ratingInput) ratingInput.value = '0';
+    
+    const starBtns = document.querySelectorAll('#rating-stars-input .star-rating-btn');
+    starBtns.forEach(btn => {
+        btn.classList.remove('active');
+        btn.textContent = '☆'; // Reset to empty stars
+    });
+    
+    renderReviews();
+}
 
 // Initialise Events
 window.addEventListener('DOMContentLoaded', () => {
     seedSampleData();
+    initReviews();
 
     document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
     document.getElementById('cart-trigger-btn').addEventListener('click', openCart);
