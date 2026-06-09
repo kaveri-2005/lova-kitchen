@@ -126,44 +126,84 @@ const MenuItems = [
 
     // 3. Tea Time
     {
+        id: 'tea-normal',
+        name: 'Tea',
+        category: 'tea',
+        price: 10,
+        desc: 'Traditional freshly brewed hot milk tea. Perfect morning kick starter.',
+        image: 'assets/tea.jpg',
+        badge: 'Hot & Fresh',
+        icon: '☕'
+    },
+    {
         id: 'tea-special',
-        name: 'Special Cardamom Tea',
+        name: 'Special Tea',
         category: 'tea',
         price: 15,
-        desc: 'Freshly brewed strong milk tea infused with cardamom and organic ginger. Rejuvenating taste.',
+        desc: 'Premium rich milk tea brewed to perfection with select tea leaves.',
         image: 'assets/tea.jpg',
-        badge: 'Freshly Brewed',
+        badge: 'Stall Special',
+        icon: '☕'
+    },
+    {
+        id: 'tea-ginger',
+        name: 'Ginger Tea',
+        category: 'tea',
+        price: 20,
+        desc: 'Hot milk tea infused with freshly crushed zesty ginger root.',
+        image: 'assets/tea.jpg',
+        badge: 'Immunity Booster',
+        icon: '☕'
+    },
+    {
+        id: 'tea-cardamom',
+        name: 'Cardamom Tea',
+        category: 'tea',
+        price: 20,
+        desc: 'Fragrant and soothing hot tea flavored with crushed green cardamom pods.',
+        image: 'assets/tea.jpg',
+        badge: 'Best Seller',
+        icon: '☕'
+    },
+    {
+        id: 'tea-bellam',
+        name: 'Bellam Tea',
+        category: 'tea',
+        price: 20,
+        desc: 'Healthy hot milk tea brewed with natural organic jaggery (bellam) instead of sugar.',
+        image: 'assets/tea.jpg',
+        badge: 'Healthy Choice',
+        icon: '☕'
+    },
+    {
+        id: 'tea-allmix',
+        name: 'All Mix Tea',
+        category: 'tea',
+        price: 25,
+        desc: 'Ultimate hot blend of ginger, cardamom, and organic jaggery (bellam) tea.',
+        image: 'assets/tea.jpg',
+        badge: 'Stall Signature',
         icon: '☕'
     },
     {
         id: 'tea-coffee',
-        name: 'Filter Coffee',
+        name: 'Coffee',
         category: 'tea',
         price: 20,
-        desc: 'Authentic South Indian chicory-infused filter coffee frothed with thick hot milk in traditional brass cups.',
+        desc: 'Hot aromatic coffee frothed with thick hot milk.',
         image: 'assets/coffee.webp',
-        badge: 'Freshly Brewed',
+        badge: 'Aromatic',
         icon: '☕'
     },
     {
-        id: 'tea-lemon',
-        name: 'Hot Lemon Tea',
+        id: 'tea-bellam-coffee',
+        name: 'Bellam Coffee',
         category: 'tea',
-        price: 15,
-        desc: 'Light black tea brewed with fresh lemon extract and a touch of honey for a refreshing temple break.',
-        image: 'assets/tea.jpg',
-        badge: 'Freshly Brewed',
-        icon: '🍋'
-    },
-    {
-        id: 'tea-badam',
-        name: 'Hot Badam Milk',
-        category: 'tea',
-        price: 25,
-        desc: 'Creamy hot milk simmered with ground almonds, saffron, and cardamom, garnished with almond flakes.',
-        image: 'assets/tea.jpg',
-        badge: 'Freshly Brewed',
-        icon: '🥛'
+        price: 20,
+        desc: 'Traditional hot filter coffee brewed with healthy organic jaggery (bellam).',
+        image: 'assets/coffee.webp',
+        badge: 'Jaggery Special',
+        icon: '☕'
     },
 
     // 4. Cool Drinks, Icecreams & Kirana
@@ -902,7 +942,7 @@ function seedSampleData() {
                 items: [
                     { id: 'tif-idly', name: 'Steam Idly (4 Pcs)', price: 30, quantity: 2, category: 'tiffins' },
                     { id: 'tif-plain-dosa', name: 'Crispy Plain Dosa', price: 30, quantity: 1, category: 'tiffins' },
-                    { id: 'tea-special', name: 'Special Cardamom Tea', price: 15, quantity: 3, category: 'tea' }
+                    { id: 'tea-special', name: 'Special Tea', price: 15, quantity: 3, category: 'tea' }
                 ],
                 total: 135,
                 paymentMethod: 'UPI',
