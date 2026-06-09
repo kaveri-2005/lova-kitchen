@@ -16,7 +16,7 @@ const MenuItems = [
         name: 'Steam Idly (4 Pcs)',
         category: 'tiffins',
         price: 30,
-        desc: 'Soft, fluffy, steaming hot rice cakes served with ginger chutney, peanut chutney, and aromatic sambar.',
+        desc: 'Soft, fluffy, steaming hot rice cakes served with ginger chutney and peanut chutney.',
         image: 'assets/idily.webp',
         badge: 'Fresh & Hot',
         icon: '🥞'
@@ -26,7 +26,7 @@ const MenuItems = [
         name: 'Crispy Plain Dosa',
         category: 'tiffins',
         price: 30,
-        desc: 'Crisp golden crepe made from fermented rice-lentil batter, served with chutneys and warm sambar.',
+        desc: 'Crisp golden crepe made from fermented rice-lentil batter, served with spicy ginger chutney and peanut chutney.',
         image: 'assets/plaindosa.webp',
         badge: 'Fresh & Hot',
         icon: '🥞'
