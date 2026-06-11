@@ -423,7 +423,7 @@ const MenuItems = [
         category: 'drinks',
         price: 10,
         desc: 'Chilled carbonated water (soda) in a bottle. Super refreshing.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/limesoda.webp',
         badge: 'Ready Stock',
         icon: '🥤'
     },
@@ -433,7 +433,7 @@ const MenuItems = [
         category: 'drinks',
         price: 20,
         desc: 'Chilled orange juice drink packed with real fruit pulp.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/pulpyorange.webp',
         badge: 'Popular',
         icon: '🥤'
     },
@@ -443,7 +443,7 @@ const MenuItems = [
         category: 'drinks',
         price: 20,
         desc: 'Chilled local soft drink. Highly refreshing carbonated beverage.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/artos.webp',
         badge: 'Ready Stock',
         icon: '🥤'
     },
