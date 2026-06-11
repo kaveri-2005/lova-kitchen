@@ -258,24 +258,194 @@ const MenuItems = [
 
     // 4. Cool Drinks, Icecreams & Kirana
     {
-        id: 'ext-soft-drink',
-        name: 'Chilled Soft Drink (500ml)',
+        id: 'drk-tu-2l',
+        name: 'Thums Up (2 Litre)',
+        category: 'drinks',
+        price: 100,
+        desc: 'Chilled, large family bottle of Thums Up cola. Perfect for group travelers.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-sp-2l',
+        name: 'Sprite (2 Litre)',
+        category: 'drinks',
+        price: 100,
+        desc: 'Chilled, refreshing green bottle of lemon-lime Sprite. Perfect for group travelers.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-fa-2l',
+        name: 'Fanta (2 Litre)',
+        category: 'drinks',
+        price: 100,
+        desc: 'Chilled, fizzy orange flavored Fanta bottle. Perfect for group travelers.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-li-2l',
+        name: 'Limca (2 Litre)',
+        category: 'drinks',
+        price: 100,
+        desc: 'Chilled, fresh and tangy lemon-lime Limca bottle. Perfect for group travelers.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-tu-1l',
+        name: 'Thums Up (1 Litre)',
+        category: 'drinks',
+        price: 60,
+        desc: 'Chilled bottle of strong, fizzy Thums Up cola.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-sp-1l',
+        name: 'Sprite (1 Litre)',
+        category: 'drinks',
+        price: 60,
+        desc: 'Chilled bottle of refreshing lemon-lime Sprite.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-fa-1l',
+        name: 'Fanta (1 Litre)',
+        category: 'drinks',
+        price: 60,
+        desc: 'Chilled bottle of bubbly orange flavored Fanta.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-li-1l',
+        name: 'Limca (1 Litre)',
+        category: 'drinks',
+        price: 60,
+        desc: 'Chilled bottle of classic tangy Limca.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-tu-500ml',
+        name: 'Thums Up (500ml)',
         category: 'drinks',
         price: 40,
-        desc: 'Assorted cold sodas (Thums Up, Sprite, Coca-Cola) straight from the refrigerator.',
+        desc: 'Chilled, convenient half-litre Thums Up bottle.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-sp-500ml',
+        name: 'Sprite (500ml)',
+        category: 'drinks',
+        price: 40,
+        desc: 'Chilled, convenient half-litre Sprite bottle.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-fa-500ml',
+        name: 'Fanta (500ml)',
+        category: 'drinks',
+        price: 40,
+        desc: 'Chilled, convenient half-litre Fanta bottle.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-li-500ml',
+        name: 'Limca (500ml)',
+        category: 'drinks',
+        price: 40,
+        desc: 'Chilled, convenient half-litre Limca bottle.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-tu-250ml',
+        name: 'Thums Up (250ml)',
+        category: 'drinks',
+        price: 20,
+        desc: 'Small chilled bottle of Thums Up cola.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-sp-250ml',
+        name: 'Sprite (250ml)',
+        category: 'drinks',
+        price: 20,
+        desc: 'Small chilled bottle of Sprite.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-fa-250ml',
+        name: 'Fanta (250ml)',
+        category: 'drinks',
+        price: 20,
+        desc: 'Small chilled bottle of orange Fanta.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-li-250ml',
+        name: 'Limca (250ml)',
+        category: 'drinks',
+        price: 20,
+        desc: 'Small chilled bottle of tangy Limca.',
+        image: 'assets/drinks.png',
+        badge: 'Chilled',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-soda',
+        name: 'Chilled Soda',
+        category: 'drinks',
+        price: 10,
+        desc: 'Chilled carbonated water (soda) in a bottle. Super refreshing.',
         image: 'assets/drinks.png',
         badge: 'Ready Stock',
         icon: '🥤'
     },
     {
-        id: 'ext-icecream',
-        name: 'Butterscotch Ice Cream Cup',
+        id: 'drk-pulpy-orange',
+        name: 'Minute Maid Pulpy Orange',
         category: 'drinks',
-        price: 30,
-        desc: 'Rich and creamy butterscotch cup ice cream with crunchy cashew praline bites.',
+        price: 20,
+        desc: 'Chilled orange juice drink packed with real fruit pulp.',
+        image: 'assets/drinks.png',
+        badge: 'Popular',
+        icon: '🥤'
+    },
+    {
+        id: 'drk-arotos',
+        name: 'Arotos',
+        category: 'drinks',
+        price: 20,
+        desc: 'Chilled local soft drink. Highly refreshing carbonated beverage.',
         image: 'assets/drinks.png',
         badge: 'Ready Stock',
-        icon: '🍦'
+        icon: '🥤'
     },
     {
         id: 'ext-paper-plates',
