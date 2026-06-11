@@ -263,7 +263,7 @@ const MenuItems = [
         category: 'drinks',
         price: 100,
         desc: 'Chilled, large family bottle of Thums Up cola. Perfect for group travelers.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/thumsup2li.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -273,7 +273,7 @@ const MenuItems = [
         category: 'drinks',
         price: 100,
         desc: 'Chilled, refreshing green bottle of lemon-lime Sprite. Perfect for group travelers.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/sprite2litr.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -283,7 +283,7 @@ const MenuItems = [
         category: 'drinks',
         price: 100,
         desc: 'Chilled, fizzy orange flavored Fanta bottle. Perfect for group travelers.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/2litfanta.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -293,7 +293,7 @@ const MenuItems = [
         category: 'drinks',
         price: 100,
         desc: 'Chilled, fresh and tangy lemon-lime Limca bottle. Perfect for group travelers.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/2litlimca.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -303,7 +303,7 @@ const MenuItems = [
         category: 'drinks',
         price: 60,
         desc: 'Chilled bottle of strong, fizzy Thums Up cola.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/1litthumsup.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -313,7 +313,7 @@ const MenuItems = [
         category: 'drinks',
         price: 60,
         desc: 'Chilled bottle of refreshing lemon-lime Sprite.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/spritelitr.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -323,7 +323,7 @@ const MenuItems = [
         category: 'drinks',
         price: 60,
         desc: 'Chilled bottle of bubbly orange flavored Fanta.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/1litfanta.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -333,7 +333,7 @@ const MenuItems = [
         category: 'drinks',
         price: 60,
         desc: 'Chilled bottle of classic tangy Limca.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/1litrelimca.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -343,7 +343,7 @@ const MenuItems = [
         category: 'drinks',
         price: 40,
         desc: 'Chilled, convenient half-litre Thums Up bottle.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/halflitthum.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -353,7 +353,7 @@ const MenuItems = [
         category: 'drinks',
         price: 40,
         desc: 'Chilled, convenient half-litre Sprite bottle.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/halflitsprite.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -363,7 +363,7 @@ const MenuItems = [
         category: 'drinks',
         price: 40,
         desc: 'Chilled, convenient half-litre Fanta bottle.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/halflitrefanata.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -373,7 +373,7 @@ const MenuItems = [
         category: 'drinks',
         price: 40,
         desc: 'Chilled, convenient half-litre Limca bottle.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/halflitrlimca.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -383,7 +383,7 @@ const MenuItems = [
         category: 'drinks',
         price: 20,
         desc: 'Small chilled bottle of Thums Up cola.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/20rsthumpsup.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -393,7 +393,7 @@ const MenuItems = [
         category: 'drinks',
         price: 20,
         desc: 'Small chilled bottle of Sprite.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/sprite20rs.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -403,7 +403,7 @@ const MenuItems = [
         category: 'drinks',
         price: 20,
         desc: 'Small chilled bottle of orange Fanta.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/20rsfanta.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -413,7 +413,7 @@ const MenuItems = [
         category: 'drinks',
         price: 20,
         desc: 'Small chilled bottle of tangy Limca.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/20rskimca.webp',
         badge: 'Chilled',
         icon: '🥤'
     },
@@ -453,7 +453,7 @@ const MenuItems = [
         category: 'drinks',
         price: 80,
         desc: 'Biodegradable premium paper plates, highly useful for temple visitors having group lunch.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/plates.webp',
         badge: 'Kirana Stock',
         icon: '🍽️'
     },
@@ -463,7 +463,7 @@ const MenuItems = [
         category: 'drinks',
         price: 50,
         desc: 'Disposable paper glasses for water, tea, and drinks. Eco-friendly and highly durable.',
-        image: 'assets/drinks.png',
+        image: 'assets/assets/waterglsses.webp',
         badge: 'Kirana Stock',
         icon: '🥤'
     },
