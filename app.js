@@ -5,11 +5,12 @@ const State = {
     theme: 'light',
     cart: [],
     orders: [],
-    selectedOrder: null
+    selectedOrder: null,
+    isAdminAuthenticated: false
 };
 
 // Menu Database (5 Partitions - Cashews Removed)
-const MenuItems = [
+const DefaultMenuItems = [
     // 1. Tiffins (Morning)
     {
         id: 'tif-idly',
@@ -521,6 +522,11 @@ function getTomorrowDateString() {
 
 // Router Navigation
 function navigate(viewName) {
+    if (viewName === 'dashboard' && !State.isAdminAuthenticated) {
+        showOwnerLoginModal();
+        return;
+    }
+
     State.currentView = viewName;
 
     // Hide all views
@@ -578,7 +584,7 @@ function closeCart() {
 
 // Add Item to Cart
 function addToCart(itemId) {
-    const item = MenuItems.find(i => i.id === itemId);
+    const item = State.menuItems.find(i => i.id === itemId);
     if (!item) return;
 
     const existing = State.cart.find(c => c.item.id === itemId);
@@ -685,7 +691,7 @@ function renderMenu() {
     const grid = document.getElementById('menu-items-grid');
     if (!grid) return;
 
-    const filtered = MenuItems.filter(item => item.category === State.activeCategory);
+    const filtered = State.menuItems.filter(item => item.category === State.activeCategory);
 
     let html = '';
     filtered.forEach(item => {
@@ -695,8 +701,24 @@ function renderMenu() {
         let badgeClass = '';
         if (item.category === 'water') badgeClass = 'water-badge';
 
+        const isOutOfStock = item.hasOwnProperty('inStock') && item.inStock === false;
         let itemActionHtml = '';
-        if (qtyInCart > 0) {
+        let soldOutOverlay = '';
+        let soldOutClass = '';
+
+        if (isOutOfStock) {
+            soldOutClass = 'sold-out-card';
+            soldOutOverlay = `
+                <div class="sold-out-overlay" style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.7); backdrop-filter: blur(1px); z-index: 2; display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--danger-color); font-size: 1.15rem; pointer-events: none; border-radius: inherit;">
+                    🚫 Sold Out
+                </div>
+            `;
+            itemActionHtml = `
+                <button class="add-to-cart-btn" disabled style="background-color: #d7ccc8; color: #8d6e63; cursor: not-allowed; border-color: #d7ccc8; box-shadow: none;">
+                    Unavailable
+                </button>
+            `;
+        } else if (qtyInCart > 0) {
             itemActionHtml = `
                 <div class="qty-selector" style="border: 1px solid var(--primary-color);">
                     <button class="qty-btn" onclick="changeCartQuantity('${item.id}', -1)">-</button>
@@ -713,15 +735,17 @@ function renderMenu() {
         }
 
         const imageSrc = item.image;
+        const opacityStyle = isOutOfStock ? 'style="opacity: 0.65;"' : '';
 
         html += `
-            <div class="menu-card" data-id="${item.id}">
+            <div class="menu-card ${soldOutClass}" data-id="${item.id}" style="position: relative;">
+                ${soldOutOverlay}
                 <div class="menu-card-img-wrapper" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--accent-light), #ffe3b3); color: var(--primary-color);">
                     <img src="${imageSrc}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" alt="${item.name}">
                     <div class="menu-icon-placeholder" style="display: none; font-size: 4rem; justify-content: center; align-items: center; width: 100%; height: 100%;">${item.icon}</div>
                     <span class="menu-badge ${badgeClass}">${item.badge}</span>
                 </div>
-                <div class="menu-card-body">
+                <div class="menu-card-body" ${opacityStyle}>
                     <h3 class="menu-card-title">${item.name}</h3>
                     <p class="menu-card-desc">${item.desc}</p>
                     <div class="menu-card-footer">
@@ -778,6 +802,9 @@ function proceedToCheckout() {
             <span>${formatRupees(entry.item.price * entry.quantity)}</span>
         </div>
     `).join('');
+
+    // Dynamically generate UPI QR Code
+    generateUPIQRCode(subtotal);
 
     navigate('checkout');
 }
@@ -1046,7 +1073,7 @@ function renderDashboard() {
     } else {
         let prepHtml = '';
         for (const [itemName, quantity] of Object.entries(prepCounts)) {
-            const menuItem = MenuItems.find(i => i.name === itemName);
+            const menuItem = State.menuItems.find(i => i.name === itemName);
             const icon = menuItem ? menuItem.icon : '🍽️';
 
             prepHtml += `
@@ -1333,6 +1360,7 @@ function handleReviewSubmit(event) {
 
 // Initialise Events
 window.addEventListener('DOMContentLoaded', () => {
+    initMenu();
     seedSampleData();
     initReviews();
 
@@ -1364,3 +1392,316 @@ window.addEventListener('DOMContentLoaded', () => {
     navigate('home');
     updateCartUI();
 });
+
+// DYNAMIC MENU DATABASE INITIALIZATION
+function initMenu() {
+    let menu = JSON.parse(localStorage.getItem('thalupulamma_menu'));
+    if (!menu) {
+        menu = DefaultMenuItems;
+        localStorage.setItem('thalupulamma_menu', JSON.stringify(menu));
+    }
+    State.menuItems = menu;
+}
+
+// DYNAMIC UPI QR CODE GENERATOR
+function generateUPIQRCode(amount) {
+    const qrImg = document.getElementById('checkout-upi-qr-img');
+    const qrLoading = document.getElementById('upi-qr-loading');
+    
+    if (!qrImg || !qrLoading) return;
+    
+    qrImg.style.display = 'none';
+    qrLoading.style.display = 'block';
+    qrLoading.textContent = 'Generating QR Code...';
+    
+    const upiId = '7780334755@ybl';
+    const payeeName = 'Sri Thalupulamma Tiffins';
+    const note = 'Lova Kitchen Order';
+    const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+    
+    const qrCodeApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiUrl)}&margin=10`;
+    
+    qrImg.src = qrCodeApiUrl;
+    
+    qrImg.onload = () => {
+        qrLoading.style.display = 'none';
+        qrImg.style.display = 'block';
+    };
+    
+    qrImg.onerror = () => {
+        qrLoading.textContent = 'Failed to load QR code. Please pay to UPI ID manually.';
+    };
+}
+
+// OWNER PORTAL AUTHENTICATION
+function showOwnerLoginModal(event) {
+    if (event) event.preventDefault();
+    const modal = document.getElementById('owner-login-modal');
+    const pinInput = document.getElementById('owner-pin');
+    const errorMsg = document.getElementById('login-error-msg');
+    
+    if (modal) {
+        modal.classList.add('open');
+        if (pinInput) {
+            pinInput.value = '';
+            pinInput.focus();
+        }
+        if (errorMsg) errorMsg.style.display = 'none';
+    }
+}
+
+function closeOwnerLoginModal() {
+    const modal = document.getElementById('owner-login-modal');
+    if (modal) {
+        modal.classList.remove('open');
+    }
+}
+
+function handleOwnerLogin(event) {
+    if (event) event.preventDefault();
+    const pinInput = document.getElementById('owner-pin');
+    const errorMsg = document.getElementById('login-error-msg');
+    const dashboardBtn = document.getElementById('cta-dashboard');
+    
+    if (!pinInput) return;
+    
+    const pin = pinInput.value.trim();
+    const correctPin = '4755'; // Last 4 digits of Kaliboyina Ramakrishna's phone: +91 7780334755
+    
+    if (pin === correctPin) {
+        State.isAdminAuthenticated = true;
+        if (errorMsg) errorMsg.style.display = 'none';
+        closeOwnerLoginModal();
+        
+        // Show dashboard nav button
+        if (dashboardBtn) {
+            dashboardBtn.style.display = 'inline-flex';
+        }
+        
+        // Navigate to dashboard
+        navigate('dashboard');
+    } else {
+        if (errorMsg) {
+            errorMsg.style.display = 'block';
+        }
+        pinInput.value = '';
+        pinInput.focus();
+    }
+}
+
+// OWNER DASHBOARD TAB SWITCHING
+function switchDashboardTab(tabName) {
+    const ordersTab = document.getElementById('dash-tab-orders');
+    const menuTab = document.getElementById('dash-tab-menu');
+    const ordersPanel = document.getElementById('dash-orders-panel');
+    const menuPanel = document.getElementById('dash-menu-panel');
+    
+    if (!ordersTab || !menuTab || !ordersPanel || !menuPanel) return;
+    
+    if (tabName === 'orders') {
+        ordersTab.classList.add('active');
+        ordersTab.style.borderBottom = '3px solid var(--primary-color)';
+        ordersTab.style.color = 'var(--primary-color)';
+        
+        menuTab.classList.remove('active');
+        menuTab.style.borderBottom = '3px solid transparent';
+        menuTab.style.color = 'var(--text-muted)';
+        
+        ordersPanel.style.display = 'block';
+        menuPanel.style.display = 'none';
+        renderDashboard();
+    } else {
+        menuTab.classList.add('active');
+        menuTab.style.borderBottom = '3px solid var(--primary-color)';
+        menuTab.style.color = 'var(--primary-color)';
+        
+        ordersTab.classList.remove('active');
+        ordersTab.style.borderBottom = '3px solid transparent';
+        ordersTab.style.color = 'var(--text-muted)';
+        
+        ordersPanel.style.display = 'none';
+        menuPanel.style.display = 'block';
+        renderAdminMenuList();
+    }
+}
+
+// RENDER ADMIN MENU LIST
+function renderAdminMenuList() {
+    const tbody = document.getElementById('admin-menu-list-tbody');
+    const filterCat = document.getElementById('dash-menu-filter-cat').value;
+    const searchVal = document.getElementById('dash-menu-search').value.toLowerCase().trim();
+    
+    if (!tbody) return;
+    
+    let items = State.menuItems;
+    
+    // Filter
+    if (filterCat !== 'all') {
+        items = items.filter(i => i.category === filterCat);
+    }
+    
+    // Search
+    if (searchVal) {
+        items = items.filter(i => i.name.toLowerCase().includes(searchVal) || i.desc.toLowerCase().includes(searchVal));
+    }
+    
+    if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">No menu items found.</td></tr>`;
+        return;
+    }
+    
+    tbody.innerHTML = items.map(item => {
+        const inStock = !item.hasOwnProperty('inStock') || item.inStock === true;
+        const categoryLabels = {
+            tiffins: 'Morning Tiffins',
+            snacks: 'Evening Snacks',
+            tea: 'Tea Time Varieties',
+            water: 'Water Plant Cans',
+            drinks: 'Drinks & Kirana'
+        };
+        
+        return `
+            <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 0.75rem 0.5rem; display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="font-size: 1.5rem;">${item.icon}</span>
+                    <div>
+                        <div style="font-weight: 600; color: var(--text-color);">${item.name}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${item.desc}</div>
+                    </div>
+                </td>
+                <td style="padding: 0.75rem 0.5rem; color: var(--text-muted); font-size: 0.85rem;">
+                    ${categoryLabels[item.category] || item.category}
+                </td>
+                <td style="padding: 0.75rem 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.25rem;">
+                        <span>₹</span>
+                        <input type="number" value="${item.price}" min="1" onchange="updateItemPrice('${item.id}', this.value)" style="width: 55px; padding: 0.25rem; border: 1px solid var(--border-color); border-radius: 4px; font-family: inherit; font-size: 0.85rem; font-weight: 600; text-align: center; color: var(--text-color); background: var(--bg-input);">
+                    </div>
+                </td>
+                <td style="padding: 0.75rem 0.5rem;">
+                    <label class="switch">
+                        <input type="checkbox" ${inStock ? 'checked' : ''} onchange="toggleItemStock('${item.id}', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                </td>
+                <td style="padding: 0.75rem 0.5rem; text-align: center;">
+                    <button class="qty-btn" onclick="deleteMenuItem('${item.id}')" style="background: rgba(217, 56, 56, 0.08); color: var(--danger-color); border: 1px solid rgba(217, 56, 56, 0.2); padding: 0.35rem 0.65rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600; font-family: inherit;">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// INLINE MENU EDITING HANDLERS
+function updateItemPrice(itemId, newPrice) {
+    const price = parseInt(newPrice);
+    if (isNaN(price) || price <= 0) {
+        alert("Please enter a valid price greater than ₹0!");
+        renderAdminMenuList();
+        return;
+    }
+    
+    const item = State.menuItems.find(i => i.id === itemId);
+    if (item) {
+        item.price = price;
+        localStorage.setItem('thalupulamma_menu', JSON.stringify(State.menuItems));
+        updateCartItemPricesAfterMenuChange();
+        renderAdminMenuList();
+    }
+}
+
+function updateCartItemPricesAfterMenuChange() {
+    State.cart.forEach(entry => {
+        const item = State.menuItems.find(i => i.id === entry.item.id);
+        if (item) {
+            entry.item.price = item.price;
+        }
+    });
+    updateCartUI();
+}
+
+function toggleItemStock(itemId, isChecked) {
+    const item = State.menuItems.find(i => i.id === itemId);
+    if (item) {
+        item.inStock = isChecked;
+        localStorage.setItem('thalupulamma_menu', JSON.stringify(State.menuItems));
+        if (!isChecked) {
+            State.cart = State.cart.filter(entry => entry.item.id !== itemId);
+            updateCartUI();
+        }
+        renderAdminMenuList();
+    }
+}
+
+function deleteMenuItem(itemId) {
+    if (!confirm("Are you sure you want to delete this menu item? It will be permanently removed from the customer menu.")) {
+        return;
+    }
+    
+    State.menuItems = State.menuItems.filter(i => i.id !== itemId);
+    localStorage.setItem('thalupulamma_menu', JSON.stringify(State.menuItems));
+    
+    State.cart = State.cart.filter(entry => entry.item.id !== itemId);
+    updateCartUI();
+    
+    renderAdminMenuList();
+}
+
+function handleAdminAddItem(event) {
+    event.preventDefault();
+    
+    const nameInput = document.getElementById('new-item-name');
+    const categorySelect = document.getElementById('new-item-category');
+    const priceInput = document.getElementById('new-item-price');
+    const iconInput = document.getElementById('new-item-icon');
+    const badgeInput = document.getElementById('new-item-badge');
+    const descInput = document.getElementById('new-item-desc');
+    const imageInput = document.getElementById('new-item-image');
+    
+    if (!nameInput || !priceInput || !descInput) return;
+    
+    const name = nameInput.value.trim();
+    const category = categorySelect.value;
+    const price = parseInt(priceInput.value);
+    const icon = iconInput.value.trim() || '🍲';
+    const badge = badgeInput.value.trim() || 'Ready Stock';
+    const desc = descInput.value.trim();
+    
+    let image = imageInput.value.trim();
+    if (!image) {
+        if (category === 'tiffins') image = 'assets/idily.webp';
+        else if (category === 'snacks') image = 'assets/pokadi.webp';
+        else if (category === 'tea') image = 'assets/tea.png';
+        else if (category === 'water') image = 'assets/20rswaterbottle.webp';
+        else image = 'assets/drinks.png';
+    }
+    
+    const id = `custom-${category}-${Date.now()}`;
+    
+    const newItem = {
+        id,
+        name,
+        category,
+        price,
+        desc,
+        image,
+        badge,
+        icon,
+        inStock: true
+    };
+    
+    State.menuItems.push(newItem);
+    localStorage.setItem('thalupulamma_menu', JSON.stringify(State.menuItems));
+    
+    nameInput.value = '';
+    priceInput.value = '';
+    badgeInput.value = '';
+    descInput.value = '';
+    imageInput.value = '';
+    iconInput.value = '🍛';
+    
+    alert(`Successfully added "${name}" to the menu!`);
+    renderAdminMenuList();
+}
