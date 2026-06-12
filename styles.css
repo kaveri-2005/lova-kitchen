@@ -1647,10 +1647,20 @@ input:focus, select:focus {
 [data-theme="dark"] .footer {
     background-color: #120e0b;
     border-top: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .footer-col h4 {
+    color: white;
+}
+
+[data-theme="dark"] .footer-col p {
+    color: var(--text-muted);
 }
 
 [data-theme="dark"] .footer-bottom {
     border-top-color: var(--border-color);
+    color: var(--text-muted);
 }
 
 /* Floating Cart Bar */
