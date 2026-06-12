@@ -133,6 +133,13 @@ const DB = {
                 if (newReviewsList.length > 0) {
                     localStorage.setItem('thalupulamma_reviews', JSON.stringify(newReviewsList));
                     renderReviews();
+                } else {
+                    let reviews = JSON.parse(localStorage.getItem('thalupulamma_reviews'));
+                    if (!reviews || reviews.length === 0) {
+                        reviews = DefaultReviews;
+                        localStorage.setItem('thalupulamma_reviews', JSON.stringify(reviews));
+                    }
+                    renderReviews();
                 }
             }, error => {
                 console.error("Firestore reviews listen error:", error);
@@ -1672,14 +1679,12 @@ const DefaultReviews = [
 ];
 
 function initReviews() {
-    if (!State.isCloudSynced) {
-        let reviews = JSON.parse(localStorage.getItem('thalupulamma_reviews'));
-        if (!reviews) {
-            reviews = DefaultReviews;
-            localStorage.setItem('thalupulamma_reviews', JSON.stringify(reviews));
-        }
-        renderReviews();
+    let reviews = JSON.parse(localStorage.getItem('thalupulamma_reviews'));
+    if (!reviews || reviews.length === 0) {
+        reviews = DefaultReviews;
+        localStorage.setItem('thalupulamma_reviews', JSON.stringify(reviews));
     }
+    renderReviews();
     setupReviewRatingListeners();
 }
 
@@ -2008,127 +2013,7 @@ function renderCustomerDirectory() {
     }).join('');
 }
 
-function inspectCustomer(phone) {
-    const user = State.users.find(u => u.phone === phone);
-    if (!user) return;
-    
-    const modal = document.getElementById('customer-profile-modal');
-    if (!modal) return;
-    
-    document.getElementById('profile-name').innerText = user.name;
-    document.getElementById('profile-phone').innerText = '+91 ' + user.phone;
-    document.getElementById('profile-avatar').innerText = user.name.charAt(0).toUpperCase() || '👤';
-    
-    const userOrders = State.orders.filter(o => o.phone === user.phone);
-    const totalSpent = userOrders.reduce((sum, o) => sum + o.total, 0);
-    
-    document.getElementById('profile-status-badge').innerText = `Registered User • ${userOrders.length} orders • ₹${totalSpent} spent`;
-    
-    const ordersContainer = document.getElementById('profile-orders-list');
-    if (ordersContainer) {
-        if (userOrders.length === 0) {
-            ordersContainer.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding: 2rem 0;">No order history found.</p>`;
-        } else {
-            const sorted = [...userOrders].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-            ordersContainer.innerHTML = sorted.map(o => {
-                const dateDisplay = new Date(o.createdAt).toLocaleDateString('en-IN', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric'
-                });
-                return `
-                    <div class="profile-order-card" style="margin-bottom:0.5rem;">
-                        <div class="profile-order-header">
-                            <span style="color:var(--primary-color); font-weight:700;">${o.token}</span>
-                            <span>₹${o.total}</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">
-                            <span>${dateDisplay} • ${o.time}</span>
-                            <span style="font-weight:700; color:${o.paymentStatus === 'PAID' ? '#2e7d32' : 'var(--accent-color)'}">${o.paymentStatus}</span>
-                        </div>
-                        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem; border-top:1px dashed var(--border-color); padding-top:0.4rem;">
-                            ${o.items.map(item => `${item.name} × ${item.quantity}`).join(', ')}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-    }
-    
-    modal.classList.add('open');
-}
 
-// RENDER CLOUD SYNC SETTINGS
-function renderFirebaseSyncSettings() {
-    const configStr = localStorage.getItem('thalupulamma_firebase_config');
-    if (configStr) {
-        try {
-            const config = JSON.parse(configStr);
-            document.getElementById('fb-apiKey').value = config.apiKey || '';
-            document.getElementById('fb-projectId').value = config.projectId || '';
-            document.getElementById('fb-authDomain').value = config.authDomain || '';
-            document.getElementById('fb-appId').value = config.appId || '';
-            document.getElementById('fb-storageBucket').value = config.storageBucket || '';
-        } catch (e) {
-            console.error("Failed to parse firebase config", e);
-        }
-    }
-    DB.updateStatusBadge();
-}
-
-async function handleAdminSaveFirebase(event) {
-    event.preventDefault();
-    
-    const config = {
-        apiKey: document.getElementById('fb-apiKey').value.trim(),
-        projectId: document.getElementById('fb-projectId').value.trim(),
-        authDomain: document.getElementById('fb-authDomain').value.trim(),
-        appId: document.getElementById('fb-appId').value.trim(),
-        storageBucket: document.getElementById('fb-storageBucket').value.trim()
-    };
-    
-    if (!config.apiKey || !config.projectId) {
-        alert("Please enter at least API Key and Project ID.");
-        return;
-    }
-    
-    localStorage.setItem('thalupulamma_firebase_config', JSON.stringify(config));
-    
-    const statusText = document.getElementById('firebase-status-text');
-    if (statusText) {
-        statusText.className = 'status-badge';
-        statusText.style.color = 'var(--text-muted)';
-        statusText.innerText = "Connecting to Cloud Firestore...";
-    }
-    
-    await DB.init();
-    
-    if (State.isCloudSynced) {
-        alert("Success! Connected to Firebase Cloud Database.");
-    } else {
-        alert("Failed to connect. Double-check your config keys and Firestore database rules.");
-    }
-}
-
-function handleAdminClearFirebase() {
-    if (confirm("Disconnect from Firebase and fall back to local storage?")) {
-        localStorage.removeItem('thalupulamma_firebase_config');
-        
-        DB.db = null;
-        DB.isInitialized = false;
-        State.isCloudSynced = false;
-        
-        DB.init();
-        
-        document.getElementById('fb-apiKey').value = '';
-        document.getElementById('fb-projectId').value = '';
-        document.getElementById('fb-authDomain').value = '';
-        document.getElementById('fb-appId').value = '';
-        document.getElementById('fb-storageBucket').value = '';
-        
-        alert("Disconnected from Firebase. Currently in Local Storage Mode.");
-    }
-}
 
 // RENDER ADMIN MENU LIST
 function renderAdminMenuList() {
