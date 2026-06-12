@@ -6,8 +6,614 @@ const State = {
     cart: [],
     orders: [],
     selectedOrder: null,
-    isAdminAuthenticated: false
+    isAdminAuthenticated: false,
+    currentUser: null,
+    dbConfig: null,
+    users: [],
+    isCloudSynced: false
 };
+
+// DATABASE INTERFACE LAYER (DUAL-MODE: FIREBASE CLOUD / LOCALSTORAGE FALLBACK)
+const DB = {
+    db: null,
+    isInitialized: false,
+    
+    async init() {
+        // 1. Try to load config from localStorage
+        const storedConfig = localStorage.getItem('thalupulamma_firebase_config');
+        if (!storedConfig) {
+            console.log("DB: Running in LocalStorage mode (No Cloud config).");
+            this.isInitialized = false;
+            State.isCloudSynced = false;
+            this.updateStatusBadge();
+            
+            // Seed local storage with defaults if not present
+            if (!localStorage.getItem('thalupulamma_users')) {
+                localStorage.setItem('thalupulamma_users', JSON.stringify([]));
+            }
+            State.users = JSON.parse(localStorage.getItem('thalupulamma_users') || '[]');
+            State.orders = JSON.parse(localStorage.getItem('thalupulamma_orders') || '[]');
+            return;
+        }
+        
+        try {
+            const config = JSON.parse(storedConfig);
+            if (!config.apiKey || !config.projectId) {
+                throw new Error("Invalid config keys.");
+            }
+            
+            // Initialize Firebase App if not initialized
+            if (firebase.apps.length === 0) {
+                firebase.initializeApp(config);
+            }
+            
+            this.db = firebase.firestore();
+            this.isInitialized = true;
+            State.isCloudSynced = true;
+            console.log("DB: Successfully connected to Firebase Cloud Firestore.");
+            this.updateStatusBadge();
+            
+            // Setup real-time listeners for live updates
+            this.setupListeners();
+            
+            // Sync offline/local items to cloud if there are any
+            await this.syncOfflineData();
+            
+        } catch (e) {
+            console.error("DB: Firebase Init failed, falling back to LocalStorage.", e);
+            this.isInitialized = false;
+            State.isCloudSynced = false;
+            this.updateStatusBadge();
+            
+            State.users = JSON.parse(localStorage.getItem('thalupulamma_users') || '[]');
+            State.orders = JSON.parse(localStorage.getItem('thalupulamma_orders') || '[]');
+        }
+    },
+    
+    updateStatusBadge() {
+        const badge = document.getElementById('firebase-status-text');
+        if (badge) {
+            if (State.isCloudSynced) {
+                badge.className = 'status-badge online';
+                badge.innerText = '● Connected & Synced (Cloud Mode)';
+            } else {
+                badge.className = 'status-badge offline';
+                badge.innerText = '● Local Storage Mode (Cloud Offline)';
+            }
+        }
+    },
+    
+    setupListeners() {
+        if (!this.isInitialized || !this.db) return;
+        
+        // Listen to orders
+        this.db.collection('orders')
+            .onSnapshot(snapshot => {
+                let changed = false;
+                let isNewOrderAdded = false;
+                const newOrdersList = [];
+                
+                snapshot.forEach(doc => {
+                    newOrdersList.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Sort by createdAt to match order of entry
+                newOrdersList.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+                
+                // Check if a new order was added
+                if (State.orders.length > 0 && newOrdersList.length > State.orders.length) {
+                    isNewOrderAdded = true;
+                }
+                
+                State.orders = newOrdersList;
+                localStorage.setItem('thalupulamma_orders', JSON.stringify(State.orders));
+                
+                // If new order, play sound alert!
+                if (isNewOrderAdded && State.currentView === 'dashboard' && State.isAdminAuthenticated) {
+                    playNewOrderSound();
+                }
+                
+                // If dashboard is currently showing, re-render it
+                if (State.currentView === 'dashboard') {
+                    renderDashboard();
+                    renderCustomerDirectory();
+                }
+            }, error => {
+                console.error("Firestore orders listen error:", error);
+            });
+            
+        // Listen to reviews
+        this.db.collection('reviews')
+            .orderBy('createdAt', 'desc')
+            .onSnapshot(snapshot => {
+                const newReviewsList = [];
+                snapshot.forEach(doc => {
+                    newReviewsList.push({ id: doc.id, ...doc.data() });
+                });
+                
+                if (newReviewsList.length > 0) {
+                    localStorage.setItem('thalupulamma_reviews', JSON.stringify(newReviewsList));
+                    renderReviews();
+                }
+            }, error => {
+                console.error("Firestore reviews listen error:", error);
+            });
+            
+        // Listen to users
+        this.db.collection('users')
+            .onSnapshot(snapshot => {
+                const newUsersList = [];
+                snapshot.forEach(doc => {
+                    newUsersList.push({ id: doc.id, ...doc.data() });
+                });
+                State.users = newUsersList;
+                localStorage.setItem('thalupulamma_users', JSON.stringify(State.users));
+                
+                if (State.currentView === 'dashboard') {
+                    renderCustomerDirectory();
+                }
+            }, error => {
+                console.error("Firestore users listen error:", error);
+            });
+    },
+    
+    async syncOfflineData() {
+        if (!this.isInitialized || !this.db) return;
+        
+        // 1. Sync orders (that are not yet in Firestore)
+        const localOrders = JSON.parse(localStorage.getItem('thalupulamma_orders') || '[]');
+        for (const order of localOrders) {
+            // Check if exists in remote
+            const querySnapshot = await this.db.collection('orders').where('token', '==', order.token).get();
+            if (querySnapshot.empty) {
+                await this.db.collection('orders').add(order);
+                console.log(`DB: Synced local order ${order.token} to cloud.`);
+            }
+        }
+        
+        // 2. Sync reviews
+        const localReviews = JSON.parse(localStorage.getItem('thalupulamma_reviews') || '[]');
+        for (const review of localReviews) {
+            // Check if exists in remote by matching comment and name
+            const querySnapshot = await this.db.collection('reviews')
+                .where('name', '==', review.name)
+                .where('comment', '==', review.comment)
+                .get();
+            if (querySnapshot.empty) {
+                review.createdAt = review.createdAt || new Date().toISOString();
+                await this.db.collection('reviews').add(review);
+                console.log(`DB: Synced local review from ${review.name} to cloud.`);
+            }
+        }
+        
+        // 3. Sync users
+        const localUsers = JSON.parse(localStorage.getItem('thalupulamma_users') || '[]');
+        for (const user of localUsers) {
+            const querySnapshot = await this.db.collection('users').where('phone', '==', user.phone).get();
+            if (querySnapshot.empty) {
+                await this.db.collection('users').add(user);
+                console.log(`DB: Synced local user ${user.name} to cloud.`);
+            }
+        }
+    },
+    
+    async getOrders() {
+        if (this.isInitialized && this.db) {
+            const snapshot = await this.db.collection('orders').get();
+            const list = [];
+            snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+            return list;
+        } else {
+            return JSON.parse(localStorage.getItem('thalupulamma_orders') || '[]');
+        }
+    },
+    
+    async addOrder(order) {
+        if (this.isInitialized && this.db) {
+            await this.db.collection('orders').add(order);
+        } else {
+            const orders = JSON.parse(localStorage.getItem('thalupulamma_orders') || '[]');
+            orders.push(order);
+            localStorage.setItem('thalupulamma_orders', JSON.stringify(orders));
+            State.orders = orders;
+            
+            if (State.currentView === 'dashboard' && State.isAdminAuthenticated) {
+                playNewOrderSound();
+                renderDashboard();
+            }
+        }
+    },
+    
+    async getReviews() {
+        if (this.isInitialized && this.db) {
+            const snapshot = await this.db.collection('reviews').orderBy('createdAt', 'desc').get();
+            const list = [];
+            snapshot.forEach(doc => list.push({ id: doc.id, ...doc.data() }));
+            return list;
+        } else {
+            return JSON.parse(localStorage.getItem('thalupulamma_reviews') || '[]');
+        }
+    },
+    
+    async addReview(review) {
+        review.createdAt = review.createdAt || new Date().toISOString();
+        if (this.isInitialized && this.db) {
+            await this.db.collection('reviews').add(review);
+        } else {
+            const reviews = JSON.parse(localStorage.getItem('thalupulamma_reviews') || '[]');
+            reviews.unshift(review);
+            localStorage.setItem('thalupulamma_reviews', JSON.stringify(reviews));
+            renderReviews();
+        }
+    },
+    
+    async addUser(user) {
+        if (this.isInitialized && this.db) {
+            const querySnapshot = await this.db.collection('users').where('phone', '==', user.phone).get();
+            if (querySnapshot.empty) {
+                await this.db.collection('users').add(user);
+                console.log(`DB: Registered user ${user.name} on Firestore.`);
+            } else {
+                const docId = querySnapshot.docs[0].id;
+                await this.db.collection('users').doc(docId).update({
+                    lastLoggedIn: new Date().toISOString(),
+                    name: user.name
+                });
+            }
+        } else {
+            const users = JSON.parse(localStorage.getItem('thalupulamma_users') || '[]');
+            const idx = users.findIndex(u => u.phone === user.phone);
+            if (idx === -1) {
+                users.push(user);
+            } else {
+                users[idx].lastLoggedIn = new Date().toISOString();
+                users[idx].name = user.name;
+            }
+            localStorage.setItem('thalupulamma_users', JSON.stringify(users));
+            State.users = users;
+        }
+    },
+    
+    async updateOrderPaymentStatus(token, status) {
+        if (this.isInitialized && this.db) {
+            const querySnapshot = await this.db.collection('orders').where('token', '==', token).get();
+            if (!querySnapshot.empty) {
+                const docId = querySnapshot.docs[0].id;
+                await this.db.collection('orders').doc(docId).update({ paymentStatus: status });
+            }
+        } else {
+            const orders = JSON.parse(localStorage.getItem('thalupulamma_orders') || '[]');
+            const idx = orders.findIndex(o => o.token === token);
+            if (idx !== -1) {
+                orders[idx].paymentStatus = status;
+                localStorage.setItem('thalupulamma_orders', JSON.stringify(orders));
+                State.orders = orders;
+                renderDashboard();
+            }
+        }
+    },
+    
+    async deleteOrder(token) {
+        if (this.isInitialized && this.db) {
+            const querySnapshot = await this.db.collection('orders').where('token', '==', token).get();
+            if (!querySnapshot.empty) {
+                const docId = querySnapshot.docs[0].id;
+                await this.db.collection('orders').doc(docId).delete();
+            }
+        } else {
+            const orders = JSON.parse(localStorage.getItem('thalupulamma_orders') || '[]');
+            const filtered = orders.filter(o => o.token !== token);
+            localStorage.setItem('thalupulamma_orders', JSON.stringify(filtered));
+            State.orders = filtered;
+            renderDashboard();
+        }
+    }
+};
+
+// CUSTOMER AUTHENTICATION INTERACTIVE LOGIC
+let customerLoginCallback = null;
+
+function showCustomerLoginModal(callback = null) {
+    customerLoginCallback = callback;
+    const modal = document.getElementById('customer-login-modal');
+    if (modal) {
+        modal.classList.add('open');
+        document.getElementById('customer-login-phone').focus();
+    }
+}
+
+function closeCustomerLoginModal() {
+    const modal = document.getElementById('customer-login-modal');
+    if (modal) {
+        modal.classList.remove('open');
+        document.getElementById('customer-login-form').reset();
+        const regFields = document.getElementById('customer-register-fields');
+        if (regFields) {
+            regFields.style.maxHeight = '0px';
+            regFields.style.opacity = '0';
+        }
+        const statusMsg = document.getElementById('customer-login-status-msg');
+        if (statusMsg) statusMsg.style.display = 'none';
+        
+        const submitBtn = document.getElementById('customer-login-submit-btn');
+        if (submitBtn) submitBtn.innerText = 'Verify Phone';
+    }
+    customerLoginCallback = null;
+}
+
+function initCustomerLoginListeners() {
+    const phoneInput = document.getElementById('customer-login-phone');
+    if (!phoneInput) return;
+    
+    phoneInput.addEventListener('input', (e) => {
+        const phone = e.target.value.trim();
+        const regFields = document.getElementById('customer-register-fields');
+        const nameInput = document.getElementById('customer-login-name');
+        const submitBtn = document.getElementById('customer-login-submit-btn');
+        const statusMsg = document.getElementById('customer-login-status-msg');
+        
+        if (phone.length === 10 && /^[0-9]+$/.test(phone)) {
+            const existingUser = State.users.find(u => u.phone === phone);
+            
+            if (existingUser) {
+                if (statusMsg) {
+                    statusMsg.style.color = 'var(--primary-color)';
+                    statusMsg.innerText = `Welcome back, ${existingUser.name}!`;
+                    statusMsg.style.display = 'block';
+                }
+                if (regFields) {
+                    regFields.style.maxHeight = '0px';
+                    regFields.style.opacity = '0';
+                }
+                if (nameInput) {
+                    nameInput.removeAttribute('required');
+                    nameInput.value = '';
+                }
+                if (submitBtn) submitBtn.innerText = 'Confirm & Log In';
+            } else {
+                if (statusMsg) {
+                    statusMsg.style.color = 'var(--accent-color)';
+                    statusMsg.innerText = 'New mobile number. Please enter your name to register.';
+                    statusMsg.style.display = 'block';
+                }
+                if (regFields) {
+                    regFields.style.maxHeight = '150px';
+                    regFields.style.opacity = '1';
+                }
+                if (nameInput) {
+                    nameInput.setAttribute('required', 'true');
+                    nameInput.focus();
+                }
+                if (submitBtn) submitBtn.innerText = 'Register & Log In';
+            }
+        } else {
+            if (regFields) {
+                regFields.style.maxHeight = '0px';
+                regFields.style.opacity = '0';
+            }
+            if (nameInput) {
+                nameInput.removeAttribute('required');
+            }
+            if (statusMsg) statusMsg.style.display = 'none';
+            if (submitBtn) submitBtn.innerText = 'Verify Phone';
+        }
+    });
+}
+
+async function handleCustomerLoginSubmit(event) {
+    event.preventDefault();
+    const phone = document.getElementById('customer-login-phone').value.trim();
+    const nameInput = document.getElementById('customer-login-name');
+    
+    let name = '';
+    const existingUser = State.users.find(u => u.phone === phone);
+    if (existingUser) {
+        name = existingUser.name;
+    } else {
+        name = nameInput.value.trim();
+    }
+    
+    if (!name || phone.length !== 10) return;
+    
+    const userObj = {
+        name: name,
+        phone: phone,
+        createdAt: new Date().toISOString(),
+        lastLoggedIn: new Date().toISOString()
+    };
+    
+    await DB.addUser(userObj);
+    
+    State.currentUser = userObj;
+    localStorage.setItem('thalupulamma_user', JSON.stringify(userObj));
+    
+    syncUserUI();
+    closeCustomerLoginModal();
+    
+    if (customerLoginCallback) {
+        customerLoginCallback();
+    }
+}
+
+function showCustomerProfileModal() {
+    if (!State.currentUser) return;
+    
+    const modal = document.getElementById('customer-profile-modal');
+    if (!modal) return;
+    
+    document.getElementById('profile-name').innerText = State.currentUser.name;
+    document.getElementById('profile-phone').innerText = '+91 ' + State.currentUser.phone;
+    document.getElementById('profile-avatar').innerText = State.currentUser.name.charAt(0).toUpperCase() || '👤';
+    
+    const userOrders = State.orders.filter(o => o.phone === State.currentUser.phone);
+    const totalSpent = userOrders.reduce((sum, o) => sum + o.total, 0);
+    
+    document.getElementById('profile-status-badge').innerText = `Placed ${userOrders.length} orders • Spent ₹${totalSpent}`;
+    
+    const ordersContainer = document.getElementById('profile-orders-list');
+    if (ordersContainer) {
+        if (userOrders.length === 0) {
+            ordersContainer.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding: 2rem 0;">No order history found yet.</p>`;
+        } else {
+            const sorted = [...userOrders].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+            ordersContainer.innerHTML = sorted.map(o => {
+                const dateDisplay = new Date(o.createdAt).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                return `
+                    <div class="profile-order-card" style="margin-bottom:0.5rem;">
+                        <div class="profile-order-header">
+                            <span style="color:var(--primary-color); font-weight:700;">${o.token}</span>
+                            <span>₹${o.total}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">
+                            <span>${dateDisplay} • ${o.time}</span>
+                            <span style="font-weight:700; color:${o.paymentStatus === 'PAID' ? '#2e7d32' : 'var(--accent-color)'}">${o.paymentStatus}</span>
+                        </div>
+                        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem; border-top:1px dashed var(--border-color); padding-top:0.4rem;">
+                            ${o.items.map(item => `${item.name} × ${item.quantity}`).join(', ')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+    
+    modal.classList.add('open');
+}
+
+function closeCustomerProfileModal() {
+    const modal = document.getElementById('customer-profile-modal');
+    if (modal) {
+        modal.classList.remove('open');
+    }
+}
+
+function handleCustomerLogout() {
+    State.currentUser = null;
+    localStorage.removeItem('thalupulamma_user');
+    
+    syncUserUI();
+    closeCustomerProfileModal();
+    
+    alert('Logged out successfully.');
+}
+
+function syncUserUI() {
+    const userContainer = document.getElementById('customer-profile-container');
+    const checkoutName = document.getElementById('checkout-name');
+    const checkoutPhone = document.getElementById('checkout-phone');
+    const reviewName = document.getElementById('review-name');
+
+    if (State.currentUser) {
+        if (userContainer) {
+            userContainer.innerHTML = `
+                <button class="nav-btn" id="customer-profile-btn" onclick="showCustomerProfileModal()" style="display: inline-flex; align-items: center; gap: 0.25rem; font-weight:600; padding: 0.5rem 0.75rem;">
+                    <span>${State.currentUser.name.split(' ')[0]} 👤</span>
+                </button>
+            `;
+        }
+        if (checkoutName) {
+            checkoutName.value = State.currentUser.name;
+            checkoutName.setAttribute('readonly', 'true');
+            checkoutName.style.backgroundColor = 'var(--bg-card)';
+            checkoutName.style.cursor = 'not-allowed';
+        }
+        if (checkoutPhone) {
+            checkoutPhone.value = State.currentUser.phone;
+            checkoutPhone.setAttribute('readonly', 'true');
+            checkoutPhone.style.backgroundColor = 'var(--bg-card)';
+            checkoutPhone.style.cursor = 'not-allowed';
+        }
+        if (reviewName) {
+            reviewName.value = State.currentUser.name;
+            reviewName.setAttribute('readonly', 'true');
+            reviewName.style.backgroundColor = 'var(--bg-card)';
+            reviewName.style.cursor = 'not-allowed';
+        }
+        
+        let logoutLink = document.getElementById('checkout-logout-link');
+        if (!logoutLink && checkoutPhone) {
+            logoutLink = document.createElement('a');
+            logoutLink.id = 'checkout-logout-link';
+            logoutLink.href = '#';
+            logoutLink.style.fontSize = '0.8rem';
+            logoutLink.style.color = 'var(--danger-color)';
+            logoutLink.style.display = 'block';
+            logoutLink.style.marginTop = '0.5rem';
+            logoutLink.innerText = 'Not you? Log Out Session';
+            logoutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                handleCustomerLogout();
+            });
+            checkoutPhone.parentNode.appendChild(logoutLink);
+        }
+    } else {
+        if (userContainer) {
+            userContainer.innerHTML = `
+                <button class="nav-btn" id="customer-login-btn" onclick="showCustomerLoginModal()" style="display: inline-flex; align-items: center; gap: 0.25rem; font-weight:600; padding: 0.5rem 0.75rem;">
+                    <span>👤 Log In</span>
+                </button>
+            `;
+        }
+        if (checkoutName) {
+            checkoutName.value = '';
+            checkoutName.removeAttribute('readonly');
+            checkoutName.style.backgroundColor = '';
+            checkoutName.style.cursor = '';
+        }
+        if (checkoutPhone) {
+            checkoutPhone.value = '';
+            checkoutPhone.removeAttribute('readonly');
+            checkoutPhone.style.backgroundColor = '';
+            checkoutPhone.style.cursor = '';
+        }
+        if (reviewName) {
+            reviewName.value = '';
+            reviewName.removeAttribute('readonly');
+            reviewName.style.backgroundColor = '';
+            reviewName.style.cursor = '';
+        }
+        const logoutLink = document.getElementById('checkout-logout-link');
+        if (logoutLink) logoutLink.remove();
+    }
+}
+
+// Sound synthesized double ding chime using Web Audio API
+function playNewOrderSound() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        
+        const ctx = new AudioContext();
+        
+        const playTone = (freq, startTime, duration) => {
+            const osc = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, startTime);
+            
+            gainNode.gain.setValueAtTime(0.3, startTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+            
+            osc.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            
+            osc.start(startTime);
+            osc.stop(startTime + duration);
+        };
+        
+        playTone(523.25, ctx.currentTime, 0.15); // C5
+        playTone(659.25, ctx.currentTime + 0.15, 0.3); // E5
+        
+    } catch (e) {
+        console.warn("Audio Context sound failed to play", e);
+    }
+}
+
 
 // Menu Database (5 Partitions - Cashews Removed)
 const DefaultMenuItems = [
@@ -806,6 +1412,14 @@ function selectCategory(category) {
 function proceedToCheckout() {
     if (State.cart.length === 0) return;
 
+    // Force frictionless login before checkout
+    if (!State.currentUser) {
+        showCustomerLoginModal(() => {
+            proceedToCheckout();
+        });
+        return;
+    }
+
     const dateInput = document.getElementById('checkout-date');
     const todayStr = getTodayDateString();
 
@@ -932,10 +1546,8 @@ function handleCheckoutSubmit(event) {
         </div>
     `;
 
-    setTimeout(() => {
-        const existingOrders = JSON.parse(localStorage.getItem('thalupulamma_orders') || '[]');
-        existingOrders.push(newOrder);
-        localStorage.setItem('thalupulamma_orders', JSON.stringify(existingOrders));
+    setTimeout(async () => {
+        await DB.addOrder(newOrder);
 
         State.selectedOrder = newOrder;
         State.cart = [];
@@ -1071,7 +1683,7 @@ function renderDashboard() {
     }
 
     const targetDate = datePicker.value;
-    const allOrders = JSON.parse(localStorage.getItem('thalupulamma_orders') || '[]');
+    const allOrders = State.orders;
     const dayOrders = allOrders.filter(o => o.date === targetDate);
 
     const prepCounts = {};
@@ -1176,12 +1788,7 @@ function markOrderCompleted(token) {
         completeBtn.style.backgroundColor = '#6c757d';
         completeBtn.disabled = true;
 
-        const allOrders = JSON.parse(localStorage.getItem('thalupulamma_orders') || '[]');
-        const idx = allOrders.findIndex(o => o.token === token);
-        if (idx !== -1) {
-            allOrders[idx].paymentStatus = 'PAID';
-            localStorage.setItem('thalupulamma_orders', JSON.stringify(allOrders));
-        }
+        await DB.updateOrderPaymentStatus(token, 'PAID');
 
         setTimeout(() => {
             renderDashboard();
@@ -1190,11 +1797,9 @@ function markOrderCompleted(token) {
 }
 
 // Cancel / Delete Order from Dashboard
-function deleteOrder(token) {
+async function deleteOrder(token) {
     if (confirm(`Are you sure you want to cancel order ${token}?`)) {
-        const allOrders = JSON.parse(localStorage.getItem('thalupulamma_orders') || '[]');
-        const filtered = allOrders.filter(o => o.token !== token);
-        localStorage.setItem('thalupulamma_orders', JSON.stringify(filtered));
+        await DB.deleteOrder(token);
         renderDashboard();
     }
 }
@@ -1279,12 +1884,14 @@ const DefaultReviews = [
 ];
 
 function initReviews() {
-    let reviews = JSON.parse(localStorage.getItem('thalupulamma_reviews'));
-    if (!reviews) {
-        reviews = DefaultReviews;
-        localStorage.setItem('thalupulamma_reviews', JSON.stringify(reviews));
+    if (!State.isCloudSynced) {
+        let reviews = JSON.parse(localStorage.getItem('thalupulamma_reviews'));
+        if (!reviews) {
+            reviews = DefaultReviews;
+            localStorage.setItem('thalupulamma_reviews', JSON.stringify(reviews));
+        }
+        renderReviews();
     }
-    renderReviews();
     setupReviewRatingListeners();
 }
 
@@ -1347,6 +1954,13 @@ function setupReviewRatingListeners() {
 function handleReviewSubmit(event) {
     event.preventDefault();
     
+    if (!State.currentUser) {
+        showCustomerLoginModal(() => {
+            handleReviewSubmit(event);
+        });
+        return;
+    }
+    
     const nameInput = document.getElementById('review-name');
     const tagSelect = document.getElementById('review-tag');
     const commentInput = document.getElementById('review-comment');
@@ -1366,31 +1980,42 @@ function handleReviewSubmit(event) {
     const comment = commentInput.value.trim();
     const avatar = name.charAt(0).toUpperCase() || '👤';
     
-    const newReview = { name, tag, rating, comment, avatar };
+    const newReview = { name, tag, rating, comment, avatar, createdAt: new Date().toISOString() };
     
-    const reviews = JSON.parse(localStorage.getItem('thalupulamma_reviews')) || DefaultReviews;
-    reviews.unshift(newReview); // Add to the top
-    localStorage.setItem('thalupulamma_reviews', JSON.stringify(reviews));
+    DB.addReview(newReview);
     
-    // Reset form
-    nameInput.value = '';
+    // Reset form fields except name which is readonly
     commentInput.value = '';
     if (ratingInput) ratingInput.value = '0';
     
     const starBtns = document.querySelectorAll('#rating-stars-input .star-rating-btn');
     starBtns.forEach(btn => {
         btn.classList.remove('active');
-        btn.textContent = '☆'; // Reset to empty stars
+        btn.textContent = '☆';
     });
-    
-    renderReviews();
 }
 
 // Initialise Events
 window.addEventListener('DOMContentLoaded', () => {
+    // Load local storage session first
+    const savedUser = localStorage.getItem('thalupulamma_user');
+    if (savedUser) {
+        try {
+            State.currentUser = JSON.parse(savedUser);
+        } catch (e) {
+            console.error("Failed to parse saved customer session", e);
+        }
+    }
+
     initMenu();
     seedSampleData();
-    initReviews();
+    
+    // Initialize Database
+    DB.init().then(() => {
+        syncUserUI();
+        initReviews();
+        initCustomerLoginListeners();
+    });
 
     document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
     document.getElementById('cart-trigger-btn').addEventListener('click', openCart);
@@ -1416,6 +2041,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('checkout-form').addEventListener('submit', handleCheckoutSubmit);
     document.getElementById('dashboard-date-select').addEventListener('change', renderDashboard);
+
+    // Form listener for customer login
+    document.getElementById('customer-login-form').addEventListener('submit', handleCustomerLoginSubmit);
 
     navigate('home');
     updateCartUI();
@@ -1519,37 +2147,218 @@ function handleOwnerLogin(event) {
 
 // OWNER DASHBOARD TAB SWITCHING
 function switchDashboardTab(tabName) {
-    const ordersTab = document.getElementById('dash-tab-orders');
-    const menuTab = document.getElementById('dash-tab-menu');
-    const ordersPanel = document.getElementById('dash-orders-panel');
-    const menuPanel = document.getElementById('dash-menu-panel');
+    const tabs = {
+        orders: document.getElementById('dash-tab-orders'),
+        menu: document.getElementById('dash-tab-menu'),
+        customers: document.getElementById('dash-tab-customers'),
+        sync: document.getElementById('dash-tab-sync')
+    };
     
-    if (!ordersTab || !menuTab || !ordersPanel || !menuPanel) return;
+    const panels = {
+        orders: document.getElementById('dash-orders-panel'),
+        menu: document.getElementById('dash-menu-panel'),
+        customers: document.getElementById('dash-customers-panel'),
+        sync: document.getElementById('dash-sync-panel')
+    };
     
+    // Switch active state for buttons
+    Object.keys(tabs).forEach(name => {
+        const tab = tabs[name];
+        if (!tab) return;
+        if (name === tabName) {
+            tab.classList.add('active');
+            tab.style.borderBottom = '3px solid var(--primary-color)';
+            tab.style.color = 'var(--primary-color)';
+        } else {
+            tab.classList.remove('active');
+            tab.style.borderBottom = '3px solid transparent';
+            tab.style.color = 'var(--text-muted)';
+        }
+    });
+    
+    // Switch display for panels
+    Object.keys(panels).forEach(name => {
+        const panel = panels[name];
+        if (!panel) return;
+        if (name === tabName) {
+            panel.style.display = 'block';
+        } else {
+            panel.style.display = 'none';
+        }
+    });
+    
+    // Load data specific to the tab
     if (tabName === 'orders') {
-        ordersTab.classList.add('active');
-        ordersTab.style.borderBottom = '3px solid var(--primary-color)';
-        ordersTab.style.color = 'var(--primary-color)';
-        
-        menuTab.classList.remove('active');
-        menuTab.style.borderBottom = '3px solid transparent';
-        menuTab.style.color = 'var(--text-muted)';
-        
-        ordersPanel.style.display = 'block';
-        menuPanel.style.display = 'none';
         renderDashboard();
-    } else {
-        menuTab.classList.add('active');
-        menuTab.style.borderBottom = '3px solid var(--primary-color)';
-        menuTab.style.color = 'var(--primary-color)';
-        
-        ordersTab.classList.remove('active');
-        ordersTab.style.borderBottom = '3px solid transparent';
-        ordersTab.style.color = 'var(--text-muted)';
-        
-        ordersPanel.style.display = 'none';
-        menuPanel.style.display = 'block';
+    } else if (tabName === 'menu') {
         renderAdminMenuList();
+    } else if (tabName === 'customers') {
+        renderCustomerDirectory();
+    } else if (tabName === 'sync') {
+        renderFirebaseSyncSettings();
+    }
+}
+
+// RENDER CUSTOMER DIRECTORY FOR OWNER
+function renderCustomerDirectory() {
+    const tbody = document.getElementById('admin-customers-tbody');
+    if (!tbody) return;
+    
+    if (State.users.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align:center; padding: 2rem; color:var(--text-muted);">
+                    No customers registered yet.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    const sortedUsers = [...State.users].sort((a, b) => new Date(b.lastLoggedIn || b.createdAt) - new Date(a.lastLoggedIn || a.createdAt));
+    
+    tbody.innerHTML = sortedUsers.map(user => {
+        const userOrders = State.orders.filter(o => o.phone === user.phone);
+        const totalSpent = userOrders.reduce((sum, o) => sum + o.total, 0);
+        const lastVisit = userOrders.length > 0 
+            ? new Date(userOrders[userOrders.length - 1].createdAt).toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+              })
+            : 'No orders yet';
+            
+        return `
+            <tr class="customer-row" onclick="inspectCustomer('${user.phone}')">
+                <td style="padding: 0.75rem 0.5rem; font-weight: 600; color:var(--text-color);">${user.name}</td>
+                <td style="padding: 0.75rem 0.5rem; color: var(--text-muted);">${user.phone}</td>
+                <td style="padding: 0.75rem 0.5rem; text-align: center; color:var(--text-color);">${userOrders.length}</td>
+                <td style="padding: 0.75rem 0.5rem; text-align: right; font-weight: 600; color:var(--text-color);">₹${totalSpent}</td>
+                <td style="padding: 0.75rem 0.5rem; color: var(--text-muted);">${lastVisit}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function inspectCustomer(phone) {
+    const user = State.users.find(u => u.phone === phone);
+    if (!user) return;
+    
+    const modal = document.getElementById('customer-profile-modal');
+    if (!modal) return;
+    
+    document.getElementById('profile-name').innerText = user.name;
+    document.getElementById('profile-phone').innerText = '+91 ' + user.phone;
+    document.getElementById('profile-avatar').innerText = user.name.charAt(0).toUpperCase() || '👤';
+    
+    const userOrders = State.orders.filter(o => o.phone === user.phone);
+    const totalSpent = userOrders.reduce((sum, o) => sum + o.total, 0);
+    
+    document.getElementById('profile-status-badge').innerText = `Registered User • ${userOrders.length} orders • ₹${totalSpent} spent`;
+    
+    const ordersContainer = document.getElementById('profile-orders-list');
+    if (ordersContainer) {
+        if (userOrders.length === 0) {
+            ordersContainer.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding: 2rem 0;">No order history found.</p>`;
+        } else {
+            const sorted = [...userOrders].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+            ordersContainer.innerHTML = sorted.map(o => {
+                const dateDisplay = new Date(o.createdAt).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                return `
+                    <div class="profile-order-card" style="margin-bottom:0.5rem;">
+                        <div class="profile-order-header">
+                            <span style="color:var(--primary-color); font-weight:700;">${o.token}</span>
+                            <span>₹${o.total}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">
+                            <span>${dateDisplay} • ${o.time}</span>
+                            <span style="font-weight:700; color:${o.paymentStatus === 'PAID' ? '#2e7d32' : 'var(--accent-color)'}">${o.paymentStatus}</span>
+                        </div>
+                        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem; border-top:1px dashed var(--border-color); padding-top:0.4rem;">
+                            ${o.items.map(item => `${item.name} × ${item.quantity}`).join(', ')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+    
+    modal.classList.add('open');
+}
+
+// RENDER CLOUD SYNC SETTINGS
+function renderFirebaseSyncSettings() {
+    const configStr = localStorage.getItem('thalupulamma_firebase_config');
+    if (configStr) {
+        try {
+            const config = JSON.parse(configStr);
+            document.getElementById('fb-apiKey').value = config.apiKey || '';
+            document.getElementById('fb-projectId').value = config.projectId || '';
+            document.getElementById('fb-authDomain').value = config.authDomain || '';
+            document.getElementById('fb-appId').value = config.appId || '';
+            document.getElementById('fb-storageBucket').value = config.storageBucket || '';
+        } catch (e) {
+            console.error("Failed to parse firebase config", e);
+        }
+    }
+    DB.updateStatusBadge();
+}
+
+async function handleAdminSaveFirebase(event) {
+    event.preventDefault();
+    
+    const config = {
+        apiKey: document.getElementById('fb-apiKey').value.trim(),
+        projectId: document.getElementById('fb-projectId').value.trim(),
+        authDomain: document.getElementById('fb-authDomain').value.trim(),
+        appId: document.getElementById('fb-appId').value.trim(),
+        storageBucket: document.getElementById('fb-storageBucket').value.trim()
+    };
+    
+    if (!config.apiKey || !config.projectId) {
+        alert("Please enter at least API Key and Project ID.");
+        return;
+    }
+    
+    localStorage.setItem('thalupulamma_firebase_config', JSON.stringify(config));
+    
+    const statusText = document.getElementById('firebase-status-text');
+    if (statusText) {
+        statusText.className = 'status-badge';
+        statusText.style.color = 'var(--text-muted)';
+        statusText.innerText = "Connecting to Cloud Firestore...";
+    }
+    
+    await DB.init();
+    
+    if (State.isCloudSynced) {
+        alert("Success! Connected to Firebase Cloud Database.");
+    } else {
+        alert("Failed to connect. Double-check your config keys and Firestore database rules.");
+    }
+}
+
+function handleAdminClearFirebase() {
+    if (confirm("Disconnect from Firebase and fall back to local storage?")) {
+        localStorage.removeItem('thalupulamma_firebase_config');
+        
+        DB.db = null;
+        DB.isInitialized = false;
+        State.isCloudSynced = false;
+        
+        DB.init();
+        
+        document.getElementById('fb-apiKey').value = '';
+        document.getElementById('fb-projectId').value = '';
+        document.getElementById('fb-authDomain').value = '';
+        document.getElementById('fb-appId').value = '';
+        document.getElementById('fb-storageBucket').value = '';
+        
+        alert("Disconnected from Firebase. Currently in Local Storage Mode.");
     }
 }
 

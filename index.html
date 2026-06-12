@@ -28,6 +28,13 @@
                         <button class="nav-btn" data-view="menu">Menu</button>
                     </div>
 
+                    <!-- Customer Profile / Login Button -->
+                    <div id="customer-profile-container" style="display: inline-flex; align-items: center; margin-right: 0.25rem;">
+                        <button class="nav-btn" id="customer-login-btn" onclick="showCustomerLoginModal()" style="display: inline-flex; align-items: center; gap: 0.25rem; font-weight:600; padding: 0.5rem 0.75rem;">
+                            <span>👤 Log In</span>
+                        </button>
+                    </div>
+
                     <!-- Theme Toggle -->
                     <button class="theme-toggle" id="theme-toggle-btn" title="Toggle Dark/Light Mode">🌙</button>
 
@@ -386,12 +393,18 @@
                 </div>
 
                 <!-- Dashboard Tab Switcher -->
-                <div class="dashboard-tabs" style="display:flex; gap:0.5rem; margin-bottom:2rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0px;">
+                <div class="dashboard-tabs" style="display:flex; gap:0.5rem; margin-bottom:2rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0px; flex-wrap: wrap;">
                     <button class="dash-tab-btn active" id="dash-tab-orders" onclick="switchDashboardTab('orders')" style="background:none; border:none; padding:0.75rem 1.25rem; font-weight:700; color:var(--primary-color); cursor:pointer; font-size:1.1rem; border-bottom: 3px solid var(--primary-color); border-radius: 4px 4px 0 0; font-family:inherit;">
                         📋 Customer Orders
                     </button>
                     <button class="dash-tab-btn" id="dash-tab-menu" onclick="switchDashboardTab('menu')" style="background:none; border:none; padding:0.75rem 1.25rem; font-weight:700; color:var(--text-muted); cursor:pointer; font-size:1.1rem; border-bottom: 3px solid transparent; border-radius: 4px 4px 0 0; font-family:inherit;">
                         ⚙️ Manage Menu & Prices
+                    </button>
+                    <button class="dash-tab-btn" id="dash-tab-customers" onclick="switchDashboardTab('customers')" style="background:none; border:none; padding:0.75rem 1.25rem; font-weight:700; color:var(--text-muted); cursor:pointer; font-size:1.1rem; border-bottom: 3px solid transparent; border-radius: 4px 4px 0 0; font-family:inherit;">
+                        👥 Customer Directory
+                    </button>
+                    <button class="dash-tab-btn" id="dash-tab-sync" onclick="switchDashboardTab('sync')" style="background:none; border:none; padding:0.75rem 1.25rem; font-weight:700; color:var(--text-muted); cursor:pointer; font-size:1.1rem; border-bottom: 3px solid transparent; border-radius: 4px 4px 0 0; font-family:inherit;">
+                        ☁️ Cloud Settings
                     </button>
                 </div>
 
@@ -548,6 +561,105 @@
                             </form>
                         </div>
 
+                </div>
+
+                <!-- Customer Directory Panel (Owner/Admin) -->
+                <div id="dash-customers-panel" style="display:none;">
+                    <div class="dashboard-card">
+                        <h3 style="font-size:1.25rem; margin-bottom:1rem; color:var(--text-color); border-bottom:2px solid var(--border-color); padding-bottom:0.5rem;">
+                            👥 Customer Directory & Engagement
+                        </h3>
+                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">
+                            Engage with customers who have ordered or reviewed. Click on a row to inspect order history.
+                        </p>
+                        
+                        <div class="admin-table-wrapper" style="overflow-x:auto;">
+                            <table class="admin-menu-table" style="width:100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-muted); font-size: 0.85rem; font-weight: 700;">
+                                        <th style="padding: 0.75rem 0.5rem;">Customer Name</th>
+                                        <th style="padding: 0.75rem 0.5rem;">Mobile Number</th>
+                                        <th style="padding: 0.75rem 0.5rem; text-align: center; width: 110px;">Total Orders</th>
+                                        <th style="padding: 0.75rem 0.5rem; text-align: right; width: 120px;">Total Spent</th>
+                                        <th style="padding: 0.75rem 0.5rem; width: 150px;">Last Visit</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-customers-tbody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cloud Sync Panel (Owner/Admin) -->
+                <div id="dash-sync-panel" style="display:none;">
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card" style="flex: 2;">
+                            <h3 style="font-size:1.25rem; margin-bottom:1rem; color:var(--text-color); border-bottom:2px solid var(--border-color); padding-bottom:0.5rem;">
+                                ☁️ Firebase Cloud Database Sync Settings
+                            </h3>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.5rem;">
+                                Connect Sri Thalupulamma Temple Tiffins to Google Firebase to enable secure remote order syncing, customer persistence, and multi-device coordination.
+                            </p>
+                            
+                            <form id="admin-firebase-form" onsubmit="handleAdminSaveFirebase(event)" style="display:flex; flex-direction:column; gap:1rem; margin-top: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border-radius: var(--border-radius-sm); background-color: var(--accent-light); border: 1px solid var(--accent-color); margin-bottom: 0.5rem;">
+                                    <div style="font-size: 1.5rem;">🛡️</div>
+                                    <div>
+                                        <span style="font-weight: 700; color: var(--accent-color); display: block;">Database Sync Status</span>
+                                        <span id="firebase-status-text" style="font-weight: 600; font-size: 0.85rem;">Local Storage Mode (Cloud Offline)</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="fb-apiKey" style="font-weight:600; font-size:0.85rem;">API Key (apiKey)</label>
+                                    <input type="text" id="fb-apiKey" placeholder="AIzaSy..." style="padding:0.6rem; border:1px solid var(--border-color); border-radius:var(--border-radius-sm); width:100%; font-family: inherit; font-size: 0.9rem;">
+                                </div>
+                                
+                                <div class="form-row" style="gap:0.75rem; display:flex;">
+                                    <div class="form-group" style="flex:1;">
+                                        <label for="fb-projectId" style="font-weight:600; font-size:0.85rem;">Project ID (projectId)</label>
+                                        <input type="text" id="fb-projectId" placeholder="lova-kitchen-xxxx" style="padding:0.6rem; border:1px solid var(--border-color); border-radius:var(--border-radius-sm); width:100%; font-family: inherit; font-size: 0.9rem;">
+                                    </div>
+                                    <div class="form-group" style="flex:1;">
+                                        <label for="fb-authDomain" style="font-weight:600; font-size:0.85rem;">Auth Domain (authDomain)</label>
+                                        <input type="text" id="fb-authDomain" placeholder="lova-kitchen-xxxx.firebaseapp.com" style="padding:0.6rem; border:1px solid var(--border-color); border-radius:var(--border-radius-sm); width:100%; font-family: inherit; font-size: 0.9rem;">
+                                    </div>
+                                </div>
+
+                                <div class="form-row" style="gap:0.75rem; display:flex;">
+                                    <div class="form-group" style="flex:1.2;">
+                                        <label for="fb-appId" style="font-weight:600; font-size:0.85rem;">App ID (appId)</label>
+                                        <input type="text" id="fb-appId" placeholder="1:xxxx:web:xxxx" style="padding:0.6rem; border:1px solid var(--border-color); border-radius:var(--border-radius-sm); width:100%; font-family: inherit; font-size: 0.9rem;">
+                                    </div>
+                                    <div class="form-group" style="flex:0.8;">
+                                        <label for="fb-storageBucket" style="font-weight:600; font-size:0.85rem;">Storage Bucket</label>
+                                        <input type="text" id="fb-storageBucket" placeholder="lova-kitchen-xxxx.appspot.com" style="padding:0.6rem; border:1px solid var(--border-color); border-radius:var(--border-radius-sm); width:100%; font-family: inherit; font-size: 0.9rem;">
+                                    </div>
+                                </div>
+                                
+                                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                                    <button type="submit" class="btn-primary" style="padding: 0.75rem; flex: 2; font-size: 1rem; font-weight: 700; font-family: inherit;">Save & Connect Cloud</button>
+                                    <button type="button" onclick="handleAdminClearFirebase()" class="btn-secondary" style="padding: 0.75rem; flex: 1; font-size: 1rem; font-family: inherit; border-color: var(--danger-color); color: var(--danger-color);">Disconnect Cloud</button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="dashboard-card" style="flex: 1; min-width: 260px;">
+                            <h3 style="font-size:1.1rem; margin-bottom:1rem; color:var(--primary-color); border-bottom:2px solid var(--border-color); padding-bottom:0.5rem;">
+                                💡 How to set up Firebase
+                            </h3>
+                            <ol style="font-size: 0.8rem; padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.6rem; color: var(--text-muted); line-height: 1.5;">
+                                <li>Go to <a href="https://console.firebase.google.com/" target="_blank" style="color:var(--primary-color); text-decoration:underline; font-weight:600;">Firebase Console</a>.</li>
+                                <li>Click <strong>Add Project</strong> and name it (e.g. <code>lova-kitchen</code>).</li>
+                                <li>In the project dashboard, click the <strong>Web icon (&lt;/&gt;)</strong> to register a web app.</li>
+                                <li>Copy the keys inside the <code>firebaseConfig</code> block and paste them here.</li>
+                                <li>In the Firebase left sidebar, go to <strong>Firestore Database</strong> and click <strong>Create Database</strong>.</li>
+                                <li>Choose <strong>Start in test mode</strong> (or configure rules to allow reads/writes) and click Next.</li>
+                                <li>Once connected here, your dashboard will listen to orders live with sound alerts!</li>
+                            </ol>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -643,6 +755,58 @@
 
     </div>
 
+    <!-- Customer Login Modal -->
+    <div class="login-modal" id="customer-login-modal">
+        <div class="login-modal-content">
+            <span class="login-modal-close" onclick="closeCustomerLoginModal()">&times;</span>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <span style="font-size: 3rem;">📱</span>
+                <h3 style="font-family: var(--font-heading); font-size: 1.5rem; margin-top: 0.5rem; color: var(--text-color);">Instant Log In</h3>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">Enter your 10-digit phone number to proceed securely</p>
+            </div>
+            <form id="customer-login-form" onsubmit="handleCustomerLoginSubmit(event)">
+                <div class="form-group">
+                    <label for="customer-login-phone" style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Mobile Number</label>
+                    <input type="tel" id="customer-login-phone" placeholder="e.g. 9876543210" required pattern="[0-9]{10}" maxlength="10" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: 0.75rem; background: var(--bg-input); color: var(--text-color); font-size: 1.1rem; text-align: center;">
+                </div>
+                
+                <!-- Expanding registration fields (hidden by default) -->
+                <div id="customer-register-fields" style="max-height: 0; overflow: hidden; transition: all 0.3s ease; opacity: 0; margin-top: 0px;">
+                    <div class="form-group" style="margin-top: 1rem;">
+                        <label for="customer-login-name" style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Your Full Name</label>
+                        <input type="text" id="customer-login-name" placeholder="e.g. Rama Krishna" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: 0.75rem; background: var(--bg-input); color: var(--text-color); font-size: 1rem;">
+                    </div>
+                </div>
+
+                <div id="customer-login-status-msg" style="margin-top: 1rem; text-align: center; font-size: 0.9rem; font-weight: 600; color: var(--primary-color); display: none;"></div>
+
+                <button type="submit" id="customer-login-submit-btn" class="btn-primary" style="width: 100%; padding: 0.75rem; margin-top: 1.5rem; font-size: 1rem;">Verify Phone</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customer Profile Modal -->
+    <div class="login-modal" id="customer-profile-modal">
+        <div class="login-modal-content" style="max-width: 450px;">
+            <span class="login-modal-close" onclick="closeCustomerProfileModal()">&times;</span>
+            <div style="text-align: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
+                <div style="width: 70px; height: 70px; border-radius: 50%; background-color: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; margin: 0 auto 0.75rem;" id="profile-avatar">👤</div>
+                <h3 id="profile-name" style="font-family: var(--font-heading); font-size: 1.5rem; color: var(--text-color); margin: 0;">Rama Krishna</h3>
+                <p id="profile-phone" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">+91 9876543210</p>
+                <span id="profile-status-badge" style="display: inline-block; font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 20px; background-color: var(--accent-light); color: var(--accent-color); font-weight: 700; margin-top: 0.5rem;">Registered Customer</span>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="margin-bottom: 0.75rem; color: var(--text-color); font-size: 1rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.25rem;">Your Order History</h4>
+                <div id="profile-orders-list" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; padding-right: 0.25rem;">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <button onclick="handleCustomerLogout()" class="btn-secondary" style="width: 100%; padding: 0.6rem; font-size: 0.95rem; border-color: var(--danger-color); color: var(--danger-color);">Log Out Session</button>
+        </div>
+    </div>
+
     <!-- Owner Login PIN Modal -->
     <div class="login-modal" id="owner-login-modal">
         <div class="login-modal-content">
@@ -664,6 +828,10 @@
             </form>
         </div>
     </div>
+
+    <!-- Firebase Compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <!-- Main JavaScript Logic -->
     <script src="app.js?v=3.1"></script>

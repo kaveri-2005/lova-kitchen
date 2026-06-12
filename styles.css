@@ -1710,3 +1710,50 @@ input:focus, select:focus {
     padding-bottom: 2px;
 }
 
+/* Database Sync and Profile History Cards */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 50px;
+    text-transform: uppercase;
+}
+.status-badge.online {
+    background-color: rgba(46, 125, 50, 0.15);
+    color: #2e7d32;
+    border: 1px solid rgba(46, 125, 50, 0.3);
+}
+.status-badge.offline {
+    background-color: rgba(198, 40, 40, 0.15);
+    color: #c62828;
+    border: 1px solid rgba(198, 40, 40, 0.3);
+}
+
+.admin-menu-table tbody tr.customer-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.admin-menu-table tbody tr.customer-row:hover {
+    background-color: var(--accent-light) !important;
+}
+
+.profile-order-card {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    padding: 0.75rem;
+    font-size: 0.85rem;
+    transition: var(--transition);
+}
+.profile-order-card:hover {
+    border-color: var(--primary-color);
+}
+.profile-order-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+}
+
+
