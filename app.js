@@ -558,6 +558,16 @@ function navigate(viewName) {
         renderReceipt();
     }
 
+    // Toggle Floating Cart Bar based on active view
+    const floatingBar = document.getElementById('floating-cart-bar');
+    if (floatingBar) {
+        if (State.cart.length > 0 && (viewName === 'home' || viewName === 'menu')) {
+            floatingBar.classList.add('visible');
+        } else {
+            floatingBar.classList.remove('visible');
+        }
+    }
+
     // Scroll to top
     window.scrollTo(0, 0);
     closeCart();
@@ -595,7 +605,6 @@ function addToCart(itemId) {
     }
 
     updateCartUI();
-    openCart();
 
     const cardBtn = document.querySelector(`[data-add-id="${itemId}"]`);
     if (cardBtn) {
@@ -678,6 +687,25 @@ function updateCartUI() {
             disclaimerEl.innerHTML = `<span>💡</span> <span>Order 10+ items for free delivery/pickup service at your temple location. Currently: ${totalCount} items (<a href="https://www.google.com/maps/search/?api=1&query=9F5W%2B7RP,+lovakothuru,+Andhra+Pradesh+533401" target="_blank" style="color:inherit; font-weight:700; text-decoration:underline;">Stall pickup near Petrol Bunk</a>).</span>`;
             disclaimerEl.style.backgroundColor = 'var(--accent-light)';
             disclaimerEl.style.color = '#8c5d00';
+        }
+    }
+
+    // Update Floating Cart Bar (Swiggy/Zomato style)
+    const floatingBar = document.getElementById('floating-cart-bar');
+    if (floatingBar) {
+        if (State.cart.length === 0) {
+            floatingBar.classList.remove('visible');
+        } else {
+            const subtotal = State.cart.reduce((sum, entry) => sum + (entry.item.price * entry.quantity), 0);
+            document.getElementById('floating-cart-count').innerText = `${totalCount} Item${totalCount > 1 ? 's' : ''}`;
+            document.getElementById('floating-cart-total').innerText = formatRupees(subtotal);
+            
+            // Show only if customer is in home or menu view
+            if (State.currentView === 'home' || State.currentView === 'menu') {
+                floatingBar.classList.add('visible');
+            } else {
+                floatingBar.classList.remove('visible');
+            }
         }
     }
 

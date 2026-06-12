@@ -1317,7 +1317,7 @@ input:focus, select:focus {
 
 /* Footer styling */
 .footer {
-    background-color: var(--text-color);
+    background-color: #2b1d15;
     color: #e5d8d0;
     padding: 3rem 2rem 1.5rem 2rem;
     margin-top: auto;
@@ -1642,5 +1642,71 @@ input:focus, select:focus {
 
 .login-modal-close:hover {
     color: var(--primary-color);
+}
+
+[data-theme="dark"] .footer {
+    background-color: #120e0b;
+    border-top: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .footer-bottom {
+    border-top-color: var(--border-color);
+}
+
+/* Floating Cart Bar */
+.floating-cart-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    width: 90%;
+    max-width: 480px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius-md);
+    box-shadow: 0 10px 30px rgba(230, 92, 0, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1900;
+    font-weight: 700;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.floating-cart-bar.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.floating-cart-bar:hover {
+    transform: translateX(-50%) translateY(-3px);
+    box-shadow: 0 15px 35px rgba(230, 92, 0, 0.4);
+}
+
+.floating-cart-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+}
+
+.floating-cart-separator {
+    opacity: 0.6;
+}
+
+.floating-cart-action {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    border-bottom: 2px solid white;
+    padding-bottom: 2px;
 }
 
