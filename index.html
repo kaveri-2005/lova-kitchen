@@ -28,12 +28,6 @@
                         <button class="nav-btn" data-view="menu">Menu</button>
                     </div>
 
-                    <!-- Customer Profile / Login Button -->
-                    <div id="customer-profile-container" style="display: inline-flex; align-items: center; margin-right: 0.25rem;">
-                        <button class="nav-btn" id="customer-login-btn" onclick="showCustomerLoginModal()" style="display: inline-flex; align-items: center; gap: 0.25rem; font-weight:600; padding: 0.5rem 0.75rem;">
-                            <span>👤 Log In</span>
-                        </button>
-                    </div>
 
                     <!-- Theme Toggle -->
                     <button class="theme-toggle" id="theme-toggle-btn" title="Toggle Dark/Light Mode">🌙</button>
@@ -755,55 +749,23 @@
 
     </div>
 
-    <!-- Customer Login Modal -->
-    <div class="login-modal" id="customer-login-modal">
-        <div class="login-modal-content">
-            <span class="login-modal-close" onclick="closeCustomerLoginModal()">&times;</span>
-            <div style="text-align: center; margin-bottom: 1.5rem;">
-                <span style="font-size: 3rem;">📱</span>
-                <h3 style="font-family: var(--font-heading); font-size: 1.5rem; margin-top: 0.5rem; color: var(--text-color);">Instant Log In</h3>
-                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.25rem;">Enter your 10-digit phone number to proceed securely</p>
-            </div>
-            <form id="customer-login-form" onsubmit="handleCustomerLoginSubmit(event)">
-                <div class="form-group">
-                    <label for="customer-login-phone" style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Mobile Number</label>
-                    <input type="tel" id="customer-login-phone" placeholder="e.g. 9876543210" required pattern="[0-9]{10}" maxlength="10" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: 0.75rem; background: var(--bg-input); color: var(--text-color); font-size: 1.1rem; text-align: center;">
-                </div>
-                
-                <!-- Expanding registration fields (hidden by default) -->
-                <div id="customer-register-fields" style="max-height: 0; overflow: hidden; transition: all 0.3s ease; opacity: 0; margin-top: 0px;">
-                    <div class="form-group" style="margin-top: 1rem;">
-                        <label for="customer-login-name" style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Your Full Name</label>
-                        <input type="text" id="customer-login-name" placeholder="e.g. Rama Krishna" style="width: 100%; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: 0.75rem; background: var(--bg-input); color: var(--text-color); font-size: 1rem;">
-                    </div>
-                </div>
-
-                <div id="customer-login-status-msg" style="margin-top: 1rem; text-align: center; font-size: 0.9rem; font-weight: 600; color: var(--primary-color); display: none;"></div>
-
-                <button type="submit" id="customer-login-submit-btn" class="btn-primary" style="width: 100%; padding: 0.75rem; margin-top: 1.5rem; font-size: 1rem;">Verify Phone</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Customer Profile Modal -->
-    <div class="login-modal" id="customer-profile-modal">
+    <!-- Admin Customer Inspect Modal (Owner Portal only) -->
+    <div class="login-modal" id="admin-customer-inspect-modal">
         <div class="login-modal-content" style="max-width: 450px;">
-            <span class="login-modal-close" onclick="closeCustomerProfileModal()">&times;</span>
+            <span class="login-modal-close" onclick="closeAdminInspectModal()">&times;</span>
             <div style="text-align: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem;">
-                <div style="width: 70px; height: 70px; border-radius: 50%; background-color: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; margin: 0 auto 0.75rem;" id="profile-avatar">👤</div>
-                <h3 id="profile-name" style="font-family: var(--font-heading); font-size: 1.5rem; color: var(--text-color); margin: 0;">Rama Krishna</h3>
-                <p id="profile-phone" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">+91 9876543210</p>
-                <span id="profile-status-badge" style="display: inline-block; font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 20px; background-color: var(--accent-light); color: var(--accent-color); font-weight: 700; margin-top: 0.5rem;">Registered Customer</span>
+                <div style="width: 70px; height: 70px; border-radius: 50%; background-color: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; margin: 0 auto 0.75rem;" id="inspect-avatar">👤</div>
+                <h3 id="inspect-name" style="font-family: var(--font-heading); font-size: 1.5rem; color: var(--text-color); margin: 0;">Rama Krishna</h3>
+                <p id="inspect-phone" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">+91 9876543210</p>
+                <span id="inspect-status-badge" style="display: inline-block; font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 20px; background-color: var(--accent-light); color: var(--accent-color); font-weight: 700; margin-top: 0.5rem;">Registered Customer</span>
             </div>
             
-            <div style="margin-bottom: 1.5rem;">
-                <h4 style="margin-bottom: 0.75rem; color: var(--text-color); font-size: 1rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.25rem;">Your Order History</h4>
-                <div id="profile-orders-list" style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; padding-right: 0.25rem;">
+            <div style="margin-bottom: 0.5rem;">
+                <h4 style="margin-bottom: 0.75rem; color: var(--text-color); font-size: 1rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0.25rem;">Order History</h4>
+                <div id="inspect-orders-list" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem; padding-right: 0.25rem;">
                     <!-- Populated dynamically -->
                 </div>
             </div>
-
-            <button onclick="handleCustomerLogout()" class="btn-secondary" style="width: 100%; padding: 0.6rem; font-size: 0.95rem; border-color: var(--danger-color); color: var(--danger-color);">Log Out Session</button>
         </div>
     </div>
 

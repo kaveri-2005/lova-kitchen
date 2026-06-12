@@ -7,7 +7,6 @@ const State = {
     orders: [],
     selectedOrder: null,
     isAdminAuthenticated: false,
-    currentUser: null,
     dbConfig: null,
     users: [],
     isCloudSynced: false
@@ -310,150 +309,27 @@ const DB = {
     }
 };
 
-// CUSTOMER AUTHENTICATION INTERACTIVE LOGIC
-let customerLoginCallback = null;
-
-function showCustomerLoginModal(callback = null) {
-    customerLoginCallback = callback;
-    const modal = document.getElementById('customer-login-modal');
-    if (modal) {
-        modal.classList.add('open');
-        document.getElementById('customer-login-phone').focus();
-    }
-}
-
-function closeCustomerLoginModal() {
-    const modal = document.getElementById('customer-login-modal');
-    if (modal) {
-        modal.classList.remove('open');
-        document.getElementById('customer-login-form').reset();
-        const regFields = document.getElementById('customer-register-fields');
-        if (regFields) {
-            regFields.style.maxHeight = '0px';
-            regFields.style.opacity = '0';
-        }
-        const statusMsg = document.getElementById('customer-login-status-msg');
-        if (statusMsg) statusMsg.style.display = 'none';
-        
-        const submitBtn = document.getElementById('customer-login-submit-btn');
-        if (submitBtn) submitBtn.innerText = 'Verify Phone';
-    }
-    customerLoginCallback = null;
-}
-
-function initCustomerLoginListeners() {
-    const phoneInput = document.getElementById('customer-login-phone');
-    if (!phoneInput) return;
+// ADMIN CUSTOMER INSPECT MODAL LOGIC
+function inspectCustomer(phone) {
+    const user = State.users.find(u => u.phone === phone);
+    if (!user) return;
     
-    phoneInput.addEventListener('input', (e) => {
-        const phone = e.target.value.trim();
-        const regFields = document.getElementById('customer-register-fields');
-        const nameInput = document.getElementById('customer-login-name');
-        const submitBtn = document.getElementById('customer-login-submit-btn');
-        const statusMsg = document.getElementById('customer-login-status-msg');
-        
-        if (phone.length === 10 && /^[0-9]+$/.test(phone)) {
-            const existingUser = State.users.find(u => u.phone === phone);
-            
-            if (existingUser) {
-                if (statusMsg) {
-                    statusMsg.style.color = 'var(--primary-color)';
-                    statusMsg.innerText = `Welcome back, ${existingUser.name}!`;
-                    statusMsg.style.display = 'block';
-                }
-                if (regFields) {
-                    regFields.style.maxHeight = '0px';
-                    regFields.style.opacity = '0';
-                }
-                if (nameInput) {
-                    nameInput.removeAttribute('required');
-                    nameInput.value = '';
-                }
-                if (submitBtn) submitBtn.innerText = 'Confirm & Log In';
-            } else {
-                if (statusMsg) {
-                    statusMsg.style.color = 'var(--accent-color)';
-                    statusMsg.innerText = 'New mobile number. Please enter your name to register.';
-                    statusMsg.style.display = 'block';
-                }
-                if (regFields) {
-                    regFields.style.maxHeight = '150px';
-                    regFields.style.opacity = '1';
-                }
-                if (nameInput) {
-                    nameInput.setAttribute('required', 'true');
-                    nameInput.focus();
-                }
-                if (submitBtn) submitBtn.innerText = 'Register & Log In';
-            }
-        } else {
-            if (regFields) {
-                regFields.style.maxHeight = '0px';
-                regFields.style.opacity = '0';
-            }
-            if (nameInput) {
-                nameInput.removeAttribute('required');
-            }
-            if (statusMsg) statusMsg.style.display = 'none';
-            if (submitBtn) submitBtn.innerText = 'Verify Phone';
-        }
-    });
-}
-
-async function handleCustomerLoginSubmit(event) {
-    event.preventDefault();
-    const phone = document.getElementById('customer-login-phone').value.trim();
-    const nameInput = document.getElementById('customer-login-name');
-    
-    let name = '';
-    const existingUser = State.users.find(u => u.phone === phone);
-    if (existingUser) {
-        name = existingUser.name;
-    } else {
-        name = nameInput.value.trim();
-    }
-    
-    if (!name || phone.length !== 10) return;
-    
-    const userObj = {
-        name: name,
-        phone: phone,
-        createdAt: new Date().toISOString(),
-        lastLoggedIn: new Date().toISOString()
-    };
-    
-    await DB.addUser(userObj);
-    
-    State.currentUser = userObj;
-    localStorage.setItem('thalupulamma_user', JSON.stringify(userObj));
-    
-    syncUserUI();
-    closeCustomerLoginModal();
-    
-    if (customerLoginCallback) {
-        customerLoginCallback();
-    }
-}
-
-function showCustomerProfileModal() {
-    if (!State.currentUser) return;
-    
-    const modal = document.getElementById('customer-profile-modal');
+    const modal = document.getElementById('admin-customer-inspect-modal');
     if (!modal) return;
     
-    document.getElementById('profile-name').innerText = State.currentUser.name;
-    document.getElementById('profile-phone').innerText = '+91 ' + State.currentUser.phone;
-    document.getElementById('profile-avatar').innerText = State.currentUser.name.charAt(0).toUpperCase() || '👤';
+    document.getElementById('inspect-name').innerText = user.name;
+    document.getElementById('inspect-phone').innerText = '+91 ' + user.phone;
+    document.getElementById('inspect-avatar').innerText = user.name.charAt(0).toUpperCase() || '👤';
     
-    const userOrders = State.orders.filter(o => o.phone === State.currentUser.phone);
+    const userOrders = State.orders.filter(o => o.phone === user.phone);
     const totalSpent = userOrders.reduce((sum, o) => sum + o.total, 0);
     
-    document.getElementById('profile-status-badge').innerText = `Placed ${userOrders.length} orders • Spent ₹${totalSpent}`;
+    document.getElementById('inspect-status-badge').innerText = `Registered User • ${userOrders.length} orders • ₹${totalSpent} spent`;
     
-    const ordersContainer = document.getElementById('profile-orders-list');
+    const ordersContainer = document.getElementById('inspect-orders-list');
     if (ordersContainer) {
         if (userOrders.length === 0) {
-            ordersContainer.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding: 2rem 0;">No order history found yet.</p>`;
+            ordersContainer.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding: 2rem 0;">No order history found.</p>`;
         } else {
             const sorted = [...userOrders].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
             ordersContainer.innerHTML = sorted.map(o => {
@@ -484,100 +360,10 @@ function showCustomerProfileModal() {
     modal.classList.add('open');
 }
 
-function closeCustomerProfileModal() {
-    const modal = document.getElementById('customer-profile-modal');
+function closeAdminInspectModal() {
+    const modal = document.getElementById('admin-customer-inspect-modal');
     if (modal) {
         modal.classList.remove('open');
-    }
-}
-
-function handleCustomerLogout() {
-    State.currentUser = null;
-    localStorage.removeItem('thalupulamma_user');
-    
-    syncUserUI();
-    closeCustomerProfileModal();
-    
-    alert('Logged out successfully.');
-}
-
-function syncUserUI() {
-    const userContainer = document.getElementById('customer-profile-container');
-    const checkoutName = document.getElementById('checkout-name');
-    const checkoutPhone = document.getElementById('checkout-phone');
-    const reviewName = document.getElementById('review-name');
-
-    if (State.currentUser) {
-        if (userContainer) {
-            userContainer.innerHTML = `
-                <button class="nav-btn" id="customer-profile-btn" onclick="showCustomerProfileModal()" style="display: inline-flex; align-items: center; gap: 0.25rem; font-weight:600; padding: 0.5rem 0.75rem;">
-                    <span>${State.currentUser.name.split(' ')[0]} 👤</span>
-                </button>
-            `;
-        }
-        if (checkoutName) {
-            checkoutName.value = State.currentUser.name;
-            checkoutName.setAttribute('readonly', 'true');
-            checkoutName.style.backgroundColor = 'var(--bg-card)';
-            checkoutName.style.cursor = 'not-allowed';
-        }
-        if (checkoutPhone) {
-            checkoutPhone.value = State.currentUser.phone;
-            checkoutPhone.setAttribute('readonly', 'true');
-            checkoutPhone.style.backgroundColor = 'var(--bg-card)';
-            checkoutPhone.style.cursor = 'not-allowed';
-        }
-        if (reviewName) {
-            reviewName.value = State.currentUser.name;
-            reviewName.setAttribute('readonly', 'true');
-            reviewName.style.backgroundColor = 'var(--bg-card)';
-            reviewName.style.cursor = 'not-allowed';
-        }
-        
-        let logoutLink = document.getElementById('checkout-logout-link');
-        if (!logoutLink && checkoutPhone) {
-            logoutLink = document.createElement('a');
-            logoutLink.id = 'checkout-logout-link';
-            logoutLink.href = '#';
-            logoutLink.style.fontSize = '0.8rem';
-            logoutLink.style.color = 'var(--danger-color)';
-            logoutLink.style.display = 'block';
-            logoutLink.style.marginTop = '0.5rem';
-            logoutLink.innerText = 'Not you? Log Out Session';
-            logoutLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                handleCustomerLogout();
-            });
-            checkoutPhone.parentNode.appendChild(logoutLink);
-        }
-    } else {
-        if (userContainer) {
-            userContainer.innerHTML = `
-                <button class="nav-btn" id="customer-login-btn" onclick="showCustomerLoginModal()" style="display: inline-flex; align-items: center; gap: 0.25rem; font-weight:600; padding: 0.5rem 0.75rem;">
-                    <span>👤 Log In</span>
-                </button>
-            `;
-        }
-        if (checkoutName) {
-            checkoutName.value = '';
-            checkoutName.removeAttribute('readonly');
-            checkoutName.style.backgroundColor = '';
-            checkoutName.style.cursor = '';
-        }
-        if (checkoutPhone) {
-            checkoutPhone.value = '';
-            checkoutPhone.removeAttribute('readonly');
-            checkoutPhone.style.backgroundColor = '';
-            checkoutPhone.style.cursor = '';
-        }
-        if (reviewName) {
-            reviewName.value = '';
-            reviewName.removeAttribute('readonly');
-            reviewName.style.backgroundColor = '';
-            reviewName.style.cursor = '';
-        }
-        const logoutLink = document.getElementById('checkout-logout-link');
-        if (logoutLink) logoutLink.remove();
     }
 }
 
@@ -1412,13 +1198,6 @@ function selectCategory(category) {
 function proceedToCheckout() {
     if (State.cart.length === 0) return;
 
-    // Force frictionless login before checkout
-    if (!State.currentUser) {
-        showCustomerLoginModal(() => {
-            proceedToCheckout();
-        });
-        return;
-    }
 
     const dateInput = document.getElementById('checkout-date');
     const todayStr = getTodayDateString();
@@ -1547,6 +1326,15 @@ function handleCheckoutSubmit(event) {
     `;
 
     setTimeout(async () => {
+        // Automatically save/register user in directory in the background
+        const userObj = {
+            name: name,
+            phone: phone,
+            createdAt: new Date().toISOString(),
+            lastLoggedIn: new Date().toISOString()
+        };
+        await DB.addUser(userObj);
+
         await DB.addOrder(newOrder);
 
         State.selectedOrder = newOrder;
@@ -1954,12 +1742,6 @@ function setupReviewRatingListeners() {
 function handleReviewSubmit(event) {
     event.preventDefault();
     
-    if (!State.currentUser) {
-        showCustomerLoginModal(() => {
-            handleReviewSubmit(event);
-        });
-        return;
-    }
     
     const nameInput = document.getElementById('review-name');
     const tagSelect = document.getElementById('review-tag');
@@ -1984,7 +1766,8 @@ function handleReviewSubmit(event) {
     
     DB.addReview(newReview);
     
-    // Reset form fields except name which is readonly
+    // Reset form fields
+    nameInput.value = '';
     commentInput.value = '';
     if (ratingInput) ratingInput.value = '0';
     
@@ -1997,24 +1780,12 @@ function handleReviewSubmit(event) {
 
 // Initialise Events
 window.addEventListener('DOMContentLoaded', () => {
-    // Load local storage session first
-    const savedUser = localStorage.getItem('thalupulamma_user');
-    if (savedUser) {
-        try {
-            State.currentUser = JSON.parse(savedUser);
-        } catch (e) {
-            console.error("Failed to parse saved customer session", e);
-        }
-    }
-
     initMenu();
     seedSampleData();
     
     // Initialize Database
     DB.init().then(() => {
-        syncUserUI();
         initReviews();
-        initCustomerLoginListeners();
     });
 
     document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
@@ -2041,9 +1812,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('checkout-form').addEventListener('submit', handleCheckoutSubmit);
     document.getElementById('dashboard-date-select').addEventListener('change', renderDashboard);
-
-    // Form listener for customer login
-    document.getElementById('customer-login-form').addEventListener('submit', handleCustomerLoginSubmit);
 
     navigate('home');
     updateCartUI();
