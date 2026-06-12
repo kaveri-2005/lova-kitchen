@@ -1573,7 +1573,7 @@ function renderDashboard() {
 }
 
 // Complete Order
-function markOrderCompleted(token) {
+async function markOrderCompleted(token) {
     const card = document.getElementById(`order-card-${token}`);
     if (card) {
         card.style.opacity = '0.4';
@@ -1601,11 +1601,12 @@ async function deleteOrder(token) {
 
 // Pre-fill Sample Data for Demonstration
 function seedSampleData() {
-    const allOrders = JSON.parse(localStorage.getItem('thalupulamma_orders') || '[]');
-    
-    if (allOrders.length === 0) {
-        const todayStr = getTodayDateString();
-        const tomorrowStr = getTomorrowDateString();
+    try {
+        const allOrders = JSON.parse(localStorage.getItem('thalupulamma_orders') || '[]');
+        
+        if (allOrders.length === 0) {
+            const todayStr = getTodayDateString();
+            const tomorrowStr = getTomorrowDateString();
         const samples = [
             {
                 token: 'T-102',
@@ -1644,6 +1645,9 @@ function seedSampleData() {
         ];
         
         localStorage.setItem('thalupulamma_orders', JSON.stringify(samples));
+        }
+    } catch (e) {
+        console.error("seedSampleData error", e);
     }
 }
 // CUSTOMER REVIEWS & FEEDBACK DATABASE
@@ -1785,51 +1789,85 @@ function handleReviewSubmit(event) {
 
 // Initialise Events
 window.addEventListener('DOMContentLoaded', () => {
-    initMenu();
-    seedSampleData();
+    try {
+        initMenu();
+    } catch (e) {
+        console.error("Failed to initialize Menu", e);
+        State.menuItems = DefaultMenuItems;
+    }
+    
+    try {
+        seedSampleData();
+    } catch (e) {
+        console.error("Failed to seed sample data", e);
+    }
     
     // Initialize Database
     DB.init().then(() => {
-        initReviews();
+        try {
+            initReviews();
+        } catch (e) {
+            console.error("Failed to initialize reviews", e);
+        }
+    }).catch(err => {
+        console.error("DB init error", err);
+        try {
+            initReviews();
+        } catch (e) {
+            console.error("Failed fallback initReviews", e);
+        }
     });
 
-    document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
-    document.getElementById('cart-trigger-btn').addEventListener('click', openCart);
-    document.getElementById('cart-close-btn').addEventListener('click', closeCart);
-    document.getElementById('backdrop').addEventListener('click', closeCart);
+    try {
+        document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
+        document.getElementById('cart-trigger-btn').addEventListener('click', openCart);
+        document.getElementById('cart-close-btn').addEventListener('click', closeCart);
+        document.getElementById('backdrop').addEventListener('click', closeCart);
 
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const view = e.currentTarget.getAttribute('data-view');
-            navigate(view);
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const view = e.currentTarget.getAttribute('data-view');
+                navigate(view);
+            });
         });
-    });
 
-    document.getElementById('cta-menu').addEventListener('click', () => navigate('menu'));
-    document.getElementById('cta-dashboard').addEventListener('click', () => navigate('dashboard'));
+        document.getElementById('cta-menu').addEventListener('click', () => navigate('menu'));
+        document.getElementById('cta-dashboard').addEventListener('click', () => navigate('dashboard'));
 
-    document.querySelectorAll('.category-pill').forEach(pill => {
-        pill.addEventListener('click', (e) => {
-            const cat = e.currentTarget.getAttribute('data-category');
-            selectCategory(cat);
+        document.querySelectorAll('.category-pill').forEach(pill => {
+            pill.addEventListener('click', (e) => {
+                const cat = e.currentTarget.getAttribute('data-category');
+                selectCategory(cat);
+            });
         });
-    });
 
-    document.getElementById('checkout-form').addEventListener('submit', handleCheckoutSubmit);
-    document.getElementById('dashboard-date-select').addEventListener('change', renderDashboard);
+        document.getElementById('checkout-form').addEventListener('submit', handleCheckoutSubmit);
+        document.getElementById('dashboard-date-select').addEventListener('change', renderDashboard);
+    } catch (e) {
+        console.error("Failed to bind event listeners", e);
+    }
 
-    navigate('home');
-    updateCartUI();
+    try {
+        navigate('home');
+        updateCartUI();
+    } catch (e) {
+        console.error("Failed to load home view or cart UI", e);
+    }
 });
 
 // DYNAMIC MENU DATABASE INITIALIZATION
 function initMenu() {
-    let menu = JSON.parse(localStorage.getItem('thalupulamma_menu'));
-    if (!menu) {
-        menu = DefaultMenuItems;
-        localStorage.setItem('thalupulamma_menu', JSON.stringify(menu));
+    try {
+        let menu = JSON.parse(localStorage.getItem('thalupulamma_menu'));
+        if (!menu || !Array.isArray(menu) || menu.length === 0) {
+            menu = DefaultMenuItems;
+            localStorage.setItem('thalupulamma_menu', JSON.stringify(menu));
+        }
+        State.menuItems = menu;
+    } catch (e) {
+        console.error("initMenu error, using DefaultMenuItems", e);
+        State.menuItems = DefaultMenuItems;
     }
-    State.menuItems = menu;
 }
 
 // DYNAMIC UPI QR CODE GENERATOR
